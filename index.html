@@ -192,21 +192,43 @@
         function updateDashboard() {
             const m = parseInt(document.getElementById('monthSelector').value);
             const g = document.getElementById('groupSelector').value;
-            const getMonthTotal = (year) => biData.filter(d => d.y === year && d.m === m && (g === 'ALL' || d.g === g)).reduce((acc, curr) => acc + curr.t, 0);
-            const t2026 = getMonthTotal(2026); const t2025 = getMonthTotal(2025); const t2024 = getMonthTotal(2024);
-            const isFuture = t2026 === 0;
+
+            // 1. Identificar o limite de dias para 2026 no mês selecionado (Precisão Temporal)
+            const daysWithData26 = biData.filter(d => d.y === 2026 && d.m === m && d.t > 0).map(d => d.d);
+            const maxDay26 = daysWithData26.length > 0 ? Math.max(...daysWithData26) : 0;
+            const isFuture = maxDay26 === 0;
+
+            const getMonthTotal = (year, dayLimit = 31) => {
+                return biData.filter(d => d.y === year && d.m === m && d.d <= dayLimit && (g === 'ALL' || d.g === g))
+                             .reduce((acc, curr) => acc + curr.t, 0);
+            };
+
+            // Totais Reais para o KPI (Mês cheio ou parcial se for 2026)
+            const t2026_total = getMonthTotal(2026); 
+            const t2025_full = getMonthTotal(2025);
+            const t2024_full = getMonthTotal(2024);
+
+            // Totais Comparativos (Apenas até o dia de corte de 2026 para Março)
+            const dayLimit = (m === 3 && maxDay26 > 0) ? maxDay26 : 31;
+            const t2025_comp = getMonthTotal(2025, dayLimit);
+            const t2024_comp = getMonthTotal(2024, dayLimit);
+            const avg_history_comp = (t2025_comp + t2024_comp) / 2;
+
             document.getElementById('statusAlert').classList.toggle('hidden', !isFuture);
-            document.getElementById('m-2026').textContent = t2026.toLocaleString();
-            document.getElementById('m-2025').textContent = t2025.toLocaleString();
-            document.getElementById('m-2024').textContent = t2024.toLocaleString();
-            document.getElementById('donutTotal').textContent = (isFuture ? t2025 : t2026).toLocaleString();
+            document.getElementById('m-2026').textContent = t2026_total.toLocaleString();
+            document.getElementById('m-2025').textContent = t2025_full.toLocaleString();
+            document.getElementById('m-2024').textContent = t2024_full.toLocaleString();
+            document.getElementById('donutTotal').textContent = (isFuture ? t2025_full : t2026_total).toLocaleString();
 
             const varElem = document.getElementById('m-var');
-            if (t2025 > 0 && !isFuture) {
-                const diff = ((t2026 - t2025) / t2025 * 100).toFixed(1);
+            if (avg_history_comp > 0 && !isFuture) {
+                const diff = ((t2026_total - avg_history_comp) / avg_history_comp * 100).toFixed(1);
                 varElem.textContent = `${diff > 0 ? '↑' : '↓'} ${Math.abs(diff)}%`;
                 varElem.style.color = diff > 0 ? '#10b981' : '#f43f5e';
+                // Adicionar info de corte se for parcial
+                if (dayLimit < 28) varElem.title = `Comparando até dia ${dayLimit}`;
             } else { varElem.textContent = "N/A"; varElem.style.color = "#64748b"; }
+
 
             const donutYear = isFuture ? 2025 : 2026;
             const groupStats = {}; biData.filter(d => d.y === donutYear && d.m === m).forEach(d => { groupStats[d.g] = (groupStats[d.g] || 0) + d.t; });
