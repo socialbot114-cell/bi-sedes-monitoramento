@@ -6,161 +6,134 @@
     <title>BI - Gestão de Força de Trabalho SEDES 2024-2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        .card { background: white; border-radius: 1.5rem; box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05); padding: 1.5rem; border: 1px solid #f1f5f9; transition: all 0.2s; }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
-        .kpi-card { @apply flex flex-col justify-center items-center text-center p-6 rounded-3xl border-2 transition-all; }
-        .filter-select { @apply bg-white border-2 border-slate-100 rounded-xl px-4 py-2 text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 w-full; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02); border-radius: 2rem; }
+        .kpi-gradient-blue { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
+        .kpi-gradient-indigo { background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); }
+        .neon-border { border: 2px solid #fb923c; box-shadow: 0 0 15px rgba(251, 146, 60, 0.3); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-[#F1F5F9] text-slate-900 font-sans">
+<body class="text-slate-900 pb-20">
 
-    <header class="bg-[#0F172A] text-white p-6 mb-6 shadow-2xl border-b-4 border-blue-600 sticky top-0 z-50">
-        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-4">
-                <div class="bg-blue-600 p-2 rounded-xl shadow-lg">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                </div>
-                <div>
-                    <h1 class="text-xl font-black tracking-tighter uppercase italic text-white underline decoration-blue-500 decoration-4">Monitoramento Operacional SEDES</h1>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">BI de Força de Trabalho | 2024-2026</p>
-                </div>
+    <header class="p-8 mb-4">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+                <span class="bg-indigo-100 text-indigo-600 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-2 inline-block">Enterprise Analytics v7.5</span>
+                <h1 class="text-4xl font-black tracking-tighter text-slate-900 italic">PORTAL <span class="text-indigo-600">SEDES</span> MONITOR</h1>
             </div>
-            <div id="statusAlert" class="hidden bg-orange-500/10 border border-orange-500/20 px-4 py-2 rounded-xl text-[10px] font-black text-orange-400 animate-pulse">
-                VISUALIZANDO BASE HISTÓRICA (2025)
+            <div id="statusAlert" class="hidden bg-orange-500 text-white px-6 py-2 rounded-2xl text-xs font-black animate-pulse shadow-lg shadow-orange-500/20">
+                ⚠️ MODO HISTÓRICO ATIVO (2025)
             </div>
-            <div class="flex flex-wrap items-center gap-4 bg-white/5 p-3 rounded-2xl border border-white/10">
-                <select id="monthSelector" class="bg-transparent text-white font-bold text-sm outline-none border-none cursor-pointer">
-                    <option value="1" class="text-slate-800">Janeiro</option><option value="2" class="text-slate-800">Fevereiro</option>
-                    <option value="3" selected class="text-slate-800">Março (Atual)</option><option value="4" class="text-slate-800">Abril</option>
-                    <option value="5" class="text-slate-800">Maio</option><option value="6" class="text-slate-800">Junho</option>
-                    <option value="7" class="text-slate-800">Julho</option><option value="8" class="text-slate-800">Agosto</option>
-                    <option value="9" class="text-slate-800">Setembro</option><option value="10" class="text-slate-800">Outubro</option>
-                    <option value="11" class="text-slate-800">Novembro</option><option value="12" class="text-slate-800">Dezembro</option>
+            <div class="flex items-center gap-3 bg-white p-2 rounded-3xl shadow-sm border border-slate-100">
+                <select id="monthSelector" class="bg-transparent font-bold text-sm px-4 outline-none cursor-pointer text-slate-600">
+                    <option value="1">Janeiro</option><option value="2">Fevereiro</option>
+                    <option value="3" selected>Março (Atual)</option><option value="4">Abril</option>
+                    <option value="5">Maio</option><option value="6">Junho</option>
+                    <option value="7">Julho</option><option value="8">Agosto</option>
+                    <option value="9">Setembro</option><option value="10">Outubro</option>
+                    <option value="11">Novembro</option><option value="12">Dezembro</option>
                 </select>
-                <div class="h-6 w-px bg-slate-700"></div>
-                <select id="groupSelector" class="bg-transparent text-white font-bold text-sm outline-none border-none cursor-pointer">
-                    <option value="ALL" class="text-slate-800">TODOS OS GRUPOS</option>
-                    <option value="CRAS / CREAS / CENTRO POP" class="text-slate-800">CRAS / CREAS / CENTRO POP</option>
-                    <option value="UNIDADE ACOLHIMENTO" class="text-slate-800">UNIDADE ACOLHIMENTO</option>
-                    <option value="OSC & POSTO" class="text-slate-800">OSC & POSTO</option>
-                    <option value="CECON / CONVIVÊNCIA" class="text-slate-800">CECON / CONVIVÊNCIA</option>
-                    <option value="OUTROS / GESTÃO" class="text-slate-800">OUTROS / GESTÃO</option>
+                <div class="h-6 w-px bg-slate-200"></div>
+                <select id="groupSelector" class="bg-transparent font-bold text-sm px-4 outline-none cursor-pointer text-indigo-600">
+                    <option value="ALL">TODOS OS GRUPOS</option>
+                    <option value="CRAS / CREAS / CENTRO POP">CRAS / CREAS / POP</option>
+                    <option value="UNIDADE ACOLHIMENTO">ACOLHIMENTO</option>
+                    <option value="OSC & POSTO">OSC & POSTO</option>
+                    <option value="CECON / CONVIVÊNCIA">CECON</option>
+                    <option value="OUTROS / GESTÃO">GESTÃO</option>
                 </select>
             </div>
         </div>
     </header>
 
-    <main class="container mx-auto px-4 pb-12">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="kpi-card border-blue-500 bg-blue-50 shadow-sm" id="kpi-card-2026">
-                <p class="text-[10px] font-black uppercase text-blue-600 tracking-widest">Volume 2026 (Mês)</p>
-                <h2 class="text-3xl font-black text-slate-800" id="m-2026">---</h2>
-                <span class="text-[10px] font-bold text-blue-400 uppercase italic">Corrente</span>
+    <main class="container mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div class="glass-card p-8 relative overflow-hidden group">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Total Acumulado 2024</p>
+                <h2 class="text-4xl font-black text-slate-800">813.878</h2>
+                <div class="mt-4 h-1 w-12 bg-slate-200 rounded-full"></div>
             </div>
-            <div class="kpi-card border-purple-400 bg-white shadow-sm">
-                <p class="text-[10px] font-black uppercase text-purple-600 tracking-widest">Volume 2025 (Mês)</p>
-                <h2 class="text-3xl font-black text-slate-800" id="m-2025">---</h2>
-                <div id="m-var-25" class="text-[10px] font-bold">---</div>
+            <div class="glass-card p-8 relative overflow-hidden group">
+                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4">Total Acumulado 2025</p>
+                <h2 class="text-4xl font-black text-slate-800">864.676</h2>
+                <div class="mt-4 flex items-center gap-2"><span class="text-[10px] font-bold text-green-500">↑ 6.2% Expansão</span></div>
             </div>
-            <div class="kpi-card border-slate-300 bg-white shadow-sm">
-                <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Volume 2024 (Mês)</p>
-                <h2 class="text-3xl font-black text-slate-800" id="m-2024">---</h2>
-                <span class="text-[10px] font-bold text-slate-400 italic">Baseline</span>
+            <div class="glass-card p-8 kpi-gradient-indigo text-white shadow-2xl shadow-indigo-500/30">
+                <p class="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-4">Volume Atual 2026</p>
+                <h2 class="text-4xl font-black" id="ann-2026">---</h2>
+                <p class="text-[10px] font-bold text-indigo-300 mt-4 uppercase">Volume do Mês</p>
             </div>
-            <div class="kpi-card border-emerald-500 bg-slate-900 text-white">
-                <p class="text-emerald-400 text-[10px] font-black uppercase tracking-widest">Média Diária (Triênio)</p>
-                <h2 class="text-3xl font-black text-emerald-400" id="m-avg">---</h2>
-                <span class="text-[10px] font-bold text-slate-500 uppercase">Vagas/Dia</span>
+            <div class="glass-card p-8 bg-emerald-900 text-white shadow-2xl shadow-emerald-900/20">
+                <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-4">Média Anual Triênio</p>
+                <h2 class="text-4xl font-black" id="ann-avg">---</h2>
+                <div class="mt-4 flex items-center gap-1"><span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span><span class="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter">Estabilidade Alta</span></div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-            <div class="card lg:col-span-4">
-                <h3 class="text-lg font-black text-slate-800 mb-6 uppercase tracking-tighter flex items-center gap-2">
-                    <span class="w-2 h-6 bg-blue-600 rounded-full"></span>
-                    Distribuição por Grupos
-                </h3>
-                <div class="h-[300px] flex items-center justify-center relative">
-                    <canvas id="donutChart"></canvas>
-                    <div class="absolute flex flex-col items-center justify-center">
-                        <span class="text-[8px] font-black text-slate-400 uppercase" id="donutLabel">Total</span>
-                        <span class="text-xl font-black text-slate-800" id="donutTotal">---</span>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+            <div class="glass-card lg:col-span-8 p-10 relative">
+                <div class="flex justify-between items-center mb-10">
+                    <div>
+                        <h3 class="text-2xl font-black text-slate-800 tracking-tighter italic uppercase text-indigo-600">Performance Diária Real-Time</h3>
+                        <div class="flex items-center gap-2 mt-1"><span class="w-3 h-px bg-orange-400 border border-dashed"></span><span class="text-[10px] font-bold text-orange-500 uppercase tracking-widest">Referência Neon: Média Histórica</span></div>
                     </div>
                 </div>
-                <div id="donutLegend" class="mt-6 space-y-2"></div>
+                <div class="h-[400px]"><canvas id="yoyChart"></canvas></div>
             </div>
-
-            <div class="card lg:col-span-8">
-                <h3 class="text-lg font-black text-slate-800 mb-6 uppercase tracking-tighter flex items-center gap-2">
-                    <span class="w-2 h-6 bg-purple-600 rounded-full"></span>
-                    Tendência Diária (YoY)
-                </h3>
-                <div class="h-[380px]">
-                    <canvas id="yoyChart"></canvas>
+            <div class="lg:col-span-4 space-y-8">
+                <div class="glass-card p-8">
+                    <h3 class="text-sm font-black text-slate-800 mb-6 uppercase tracking-widest border-b border-slate-100 pb-2">Distribuição de Esforço</h3>
+                    <div class="h-[220px] relative flex items-center justify-center">
+                        <canvas id="donutChart"></canvas>
+                        <div class="absolute text-center"><span class="text-[10px] font-black text-slate-400 uppercase">Total Mês</span><br><span class="text-2xl font-black text-slate-800" id="donutTotal">---</span></div>
+                    </div>
+                    <div id="donutLegend" class="mt-6 grid grid-cols-2 gap-2"></div>
                 </div>
-                <div class="mt-4 flex justify-center gap-6 text-[10px] font-black uppercase tracking-widest">
-                    <span class="flex items-center gap-2"><span class="w-3 h-3 bg-blue-500 rounded-sm"></span> 2026</span>
-                    <span class="flex items-center gap-2"><span class="w-3 h-3 bg-purple-500 rounded-sm"></span> 2025</span>
-                    <span class="flex items-center gap-2"><span class="w-3 h-px bg-slate-300 border-2 border-dashed"></span> 2024</span>
+                <div class="glass-card p-8 kpi-gradient-blue text-white">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Pico do Mês</p>
+                    <h2 class="text-3xl font-black text-indigo-400" id="kpi-day-max">---</h2>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">Maior volume registrado</p>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div class="card">
-                <h3 class="text-lg font-black text-slate-800 mb-6 uppercase tracking-tighter flex items-center gap-2 text-blue-600">
-                    <span class="w-2 h-6 bg-blue-600 rounded-full"></span>
-                    Maiores Volumes Executores (Top 10)
-                </h3>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <div class="glass-card p-8">
+                <h3 class="text-xl font-black text-indigo-600 mb-8 uppercase tracking-tighter flex items-center gap-3">🔥 High Performers (Top 10)</h3>
                 <div id="topUnitsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3"></div>
             </div>
-            <div class="card">
-                <h3 class="text-lg font-black text-slate-800 mb-6 uppercase tracking-tighter flex items-center gap-2 text-red-600">
-                    <span class="w-2 h-6 bg-red-600 rounded-full"></span>
-                    Menores Volumes Executores (Bottom 10)
-                </h3>
+            <div class="glass-card p-8">
+                <h3 class="text-xl font-black text-rose-500 mb-8 uppercase tracking-tighter flex items-center gap-3">❄️ Low Volume Units (Bottom 10)</h3>
                 <div id="bottomUnitsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3"></div>
             </div>
         </div>
 
-        <div class="card border-l-8 border-slate-800">
-            <h3 class="text-xl font-black text-slate-800 mb-6 uppercase tracking-widest flex items-center gap-3 italic">
-                <svg class="w-6 h-6 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                Glossário da Taxonomia (Regras de Negócio)
-            </h3>
-            <div id="taxonomyDictionary" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6"></div>
+        <div class="glass-card p-10 border-t-8 border-indigo-600">
+            <h3 class="text-2xl font-black text-slate-800 mb-8 uppercase tracking-tighter italic">Dicionário de Grupos de Trabalho</h3>
+            <div id="taxonomyDictionary" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8"></div>
         </div>
     </main>
-
-    <footer class="text-center py-10 text-slate-400 text-[10px] font-black uppercase tracking-[0.5em]">
-        Orquestrador Antigravity | Gestão Analítica SEDES DF
-    </footer>
 
     <script>
         let charts = {};
         let biData;
         let unitMapping;
-        const GROUP_COLORS = {
-            "CRAS / CREAS / CENTRO POP": "#3b82f6",
-            "UNIDADE ACOLHIMENTO": "#a855f7",
-            "OSC & POSTO": "#fbbf24",
-            "CECON / CONVIVÊNCIA": "#10b981",
-            "OUTROS / GESTÃO": "#64748b"
-        };
+        const GROUP_COLORS = {"CRAS / CREAS / CENTRO POP": "#4f46e5","UNIDADE ACOLHIMENTO": "#a855f7","OSC & POSTO": "#f59e0b","CECON / CONVIVÊNCIA": "#10b981","OUTROS / GESTÃO": "#64748b"};
 
         async function init() {
             biData = await fetch('./data/bi_data_v3.json').then(r => r.json());
             unitMapping = await fetch('./data/unit_mapping_v3.json').then(r => r.json());
+            const totalHistorico = 813878 + 864676 + 155858;
+            document.getElementById('ann-avg').textContent = Math.round(totalHistorico / 3).toLocaleString();
             const dictContainer = document.getElementById('taxonomyDictionary');
             dictContainer.innerHTML = Object.entries(unitMapping).map(([group, units]) => `
-                <div class="space-y-3">
-                    <p class="text-xs font-black p-2 rounded-lg uppercase tracking-tighter" style="background:${GROUP_COLORS[group]}15; color:${GROUP_COLORS[group]}">
-                        ${group}
-                    </p>
-                    <div class="max-h-40 overflow-y-auto pr-2 custom-scrollbar">
-                        ${units.map(u => `<p class="text-[9px] font-bold text-slate-500 border-b border-slate-50 py-1 uppercase">${u}</p>`).join('')}
-                    </div>
+                <div class="bg-slate-50 p-4 rounded-3xl border border-slate-100">
+                    <p class="text-[10px] font-black mb-3 px-2 py-1 rounded-full text-center uppercase tracking-tighter" style="background:${GROUP_COLORS[group]}20; color:${GROUP_COLORS[group]}">${group}</p>
+                    <div class="max-h-32 overflow-y-auto pr-2 custom-scrollbar space-y-1">${units.map(u => `<p class="text-[8px] font-bold text-slate-500 uppercase leading-tight">${u}</p>`).join('')}</div>
                 </div>`).join('');
             document.getElementById('groupSelector').addEventListener('change', updateDashboard);
             document.getElementById('monthSelector').addEventListener('change', updateDashboard);
@@ -170,112 +143,50 @@
         function updateDashboard() {
             const m = parseInt(document.getElementById('monthSelector').value);
             const g = document.getElementById('groupSelector').value;
-            const getMonthTotal = (year) => {
-                return biData.filter(d => d.y === year && d.m === m && (g === 'ALL' || d.g === g))
-                             .reduce((acc, curr) => acc + curr.t, 0);
-            };
-            const t2026 = getMonthTotal(2026);
-            const t2025 = getMonthTotal(2025);
-            const t2024 = getMonthTotal(2024);
+            const getMonthTotal = (year) => biData.filter(d => d.y === year && d.m === m && (g === 'ALL' || d.g === g)).reduce((acc, curr) => acc + curr.t, 0);
+            const t2026 = getMonthTotal(2026); const t2025 = getMonthTotal(2025); const t2024 = getMonthTotal(2024);
             const isFuture = t2026 === 0;
             document.getElementById('statusAlert').classList.toggle('hidden', !isFuture);
-            document.getElementById('kpi-card-2026').style.opacity = isFuture ? '0.3' : '1';
-            document.getElementById('m-2026').textContent = t2026.toLocaleString();
-            document.getElementById('m-2025').textContent = t2025.toLocaleString();
-            document.getElementById('m-2024').textContent = t2024.toLocaleString();
-            const avgDaily = Math.round((t2026 + t2025 + t2024) / (31 * (isFuture ? 2 : 3)));
-            document.getElementById('m-avg').textContent = avgDaily.toLocaleString();
-            const var25 = document.getElementById('m-var-25');
-            if (t2025 > 0 && !isFuture) {
-                const diff = ((t2026 - t2025) / t2025 * 100).toFixed(1);
-                var25.textContent = `${diff > 0 ? '↑' : '↓'} ${Math.abs(diff)}% vs 2025`;
-                var25.className = `text-[10px] font-bold ${diff > 0 ? 'text-green-500' : 'text-red-500'}`;
-            } else if (isFuture && t2024 > 0) {
-                const diff = ((t2025 - t2024) / t2024 * 100).toFixed(1);
-                var25.textContent = `${diff > 0 ? '↑' : '↓'} ${Math.abs(diff)}% (25 vs 24)`;
-                var25.className = `text-[10px] font-bold text-slate-400`;
-            } else { var25.textContent = "N/A"; var25.className = "text-[10px] font-bold text-slate-300"; }
-            const donutYear = isFuture ? 2025 : 2026;
-            document.getElementById('donutLabel').textContent = `Total ${donutYear}`;
+            document.getElementById('ann-2026').textContent = t2026.toLocaleString();
             document.getElementById('donutTotal').textContent = (isFuture ? t2025 : t2026).toLocaleString();
-            const groupStats = {};
-            biData.filter(d => d.y === donutYear && d.m === m).forEach(d => {
-                groupStats[d.g] = (groupStats[d.g] || 0) + d.t;
-            });
+            const donutYear = isFuture ? 2025 : 2026;
+            const groupStats = {}; biData.filter(d => d.y === donutYear && d.m === m).forEach(d => { groupStats[d.g] = (groupStats[d.g] || 0) + d.t; });
             updateDonutChart(groupStats);
-            const unitStats = {};
-            biData.filter(d => d.y === donutYear && d.m === m && (g === 'ALL' || d.g === g)).forEach(d => {
-                d.u.forEach(unit => { unitStats[unit.n] = (unitStats[unit.n] || 0) + unit.t; });
-            });
+            const unitStats = {}; biData.filter(d => d.y === donutYear && d.m === m && (g === 'ALL' || d.g === g)).forEach(d => { d.u.forEach(unit => { unitStats[unit.n] = (unitStats[unit.n] || 0) + unit.t; }); });
             const sortedUnits = Object.entries(unitStats).sort((a,b) => b[1] - a[1]);
-            const top10 = sortedUnits.slice(0, 10);
-            const bottom10 = sortedUnits.slice(-10).reverse();
+            document.getElementById('kpi-day-max').textContent = sortedUnits[0] ? sortedUnits[0][1].toLocaleString() : "---";
             const renderUnits = (units, containerId, colorClass) => {
                 document.getElementById(containerId).innerHTML = units.map(([n, t]) => `
-                    <div class="relative group p-3 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col gap-1" title="${n}">
-                        <p class="text-[9px] font-black text-slate-700 truncate w-full group-hover:whitespace-normal group-hover:bg-white group-hover:z-50 group-hover:relative group-hover:p-1">${n}</p>
-                        <p class="text-lg font-black ${colorClass}">${t.toLocaleString()}</p>
+                    <div class="relative group p-4 bg-white rounded-3xl border border-slate-50 shadow-sm flex flex-col gap-1 transition-all hover:shadow-md" title="${n}">
+                        <p class="text-[8px] font-black text-slate-400 uppercase truncate w-full group-hover:whitespace-normal group-hover:bg-white group-hover:z-50 group-hover:relative group-hover:p-1">${n}</p>
+                        <p class="text-xl font-black ${colorClass}">${t.toLocaleString()}</p>
                     </div>`).join('');
             };
-            renderUnits(top10, 'topUnitsGrid', isFuture ? 'text-purple-600' : 'text-blue-600');
-            renderUnits(bottom10, 'bottomUnitsGrid', 'text-red-500');
+            renderUnits(sortedUnits.slice(0, 10), 'topUnitsGrid', 'text-indigo-600');
+            renderUnits(sortedUnits.slice(-10).reverse(), 'bottomUnitsGrid', 'text-rose-500');
             updateLineChart(m, g);
         }
 
         function updateDonutChart(stats) {
-            const labels = Object.keys(stats);
-            const data = Object.values(stats);
-            const colors = labels.map(l => GROUP_COLORS[l] || '#64748b');
+            const labels = Object.keys(stats); const data = Object.values(stats); const colors = labels.map(l => GROUP_COLORS[l] || '#64748b');
             if (charts.donut) charts.donut.destroy();
-            charts.donut = new Chart(document.getElementById('donutChart'), {
-                type: 'doughnut',
-                data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 0, cutout: '82%', borderRadius: 10 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
+            charts.donut = new Chart(document.getElementById('donutChart'), { type: 'doughnut', data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 0, cutout: '85%', borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
             const total = data.reduce((a,b) => a+b, 0);
-            document.getElementById('donutLegend').innerHTML = labels.map((l, i) => `
-                <div class="flex justify-between items-center text-[10px] font-bold">
-                    <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full" style="background:${colors[i]}"></span>
-                        <span class="text-slate-500 uppercase truncate w-32">${l}</span>
-                    </div>
-                    <span class="text-slate-800">${Math.round(data[i]/total*100)}%</span>
-                </div>`).join('');
+            document.getElementById('donutLegend').innerHTML = labels.map((l, i) => `<div class="flex flex-col p-2 bg-slate-50 rounded-2xl border border-slate-100"><span class="text-[7px] font-black uppercase text-slate-400" style="color:${colors[i]}">${l}</span><span class="text-xs font-black text-slate-800">${Math.round(data[i]/total*100)}%</span></div>`).join('');
         }
 
         function updateLineChart(m, g) {
             const days = Array.from({length: 31}, (_, i) => i + 1);
-            const getYearly = (year) => {
-                const results = Array(31).fill(0);
-                const counts = Array(31).fill(0);
-                biData.filter(d => d.y === year && d.m === m && (g === 'ALL' || d.g === g)).forEach(d => {
-                    results[d.d - 1] += d.t; counts[d.d - 1] = 1;
-                });
-                return results.map((v, i) => counts[i] > 0 ? v : null);
-            };
+            const getYearly = (year) => { const res = Array(31).fill(0); const c = Array(31).fill(0); biData.filter(d => d.y === year && d.m === m && (g === 'ALL' || d.g === g)).forEach(d => { res[d.d - 1] += d.t; c[d.d - 1] = 1; }); return res.map((v, i) => c[i] > 0 ? v : null); };
+            const d26 = getYearly(2026); const d25 = getYearly(2025); const d24 = getYearly(2024);
+            const allData = [...d26, ...d25, ...d24].filter(x => x !== null);
+            const monthlyAvg = allData.length > 0 ? allData.reduce((a,b)=>a+b,0) / allData.length : 0;
             if (charts.line) charts.line.destroy();
-            charts.line = new Chart(document.getElementById('yoyChart'), {
-                type: 'line',
-                data: {
-                    labels: days,
-                    datasets: [
-                        { label: '2024', data: getYearly(2024), borderColor: '#cbd5e1', borderDash: [6, 4], fill: false, tension: 0.1, borderWidth: 2 },
-                        { label: '2025', data: getYearly(2025), borderColor: '#a855f7', borderWidth: 2.5, fill: false, tension: 0.2 },
-                        { label: '2026', data: getYearly(2026), borderColor: '#3b82f6', borderWidth: 5, fill: true, backgroundColor: 'rgba(59, 130, 246, 0.05)', tension: 0.4, pointRadius: 4, pointBackgroundColor: '#3b82f6' }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: { 
-                        x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } },
-                        y: { beginAtZero: true, grid: { borderDash: [5, 5] }, ticks: { font: { size: 10, weight: 'bold' } } }
-                    },
-                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#0f172a', padding: 12, cornerRadius: 10 } }
-                }
-            });
+            charts.line = new Chart(document.getElementById('yoyChart'), { type: 'line', data: { labels: days, datasets: [{ label: 'Referência Neon', data: Array(31).fill(monthlyAvg), borderColor: '#fb923c', borderDash: [5, 5], borderWidth: 2, pointRadius: 0, fill: false }, { label: '2024', data: d24, borderColor: '#e2e8f0', borderWidth: 1, fill: false, tension: 0.1 }, { label: '2025', data: d25, borderColor: '#94a3b8', borderWidth: 2, fill: false, tension: 0.1 }, { label: '2026', data: d26, borderColor: '#4f46e5', borderWidth: 5, backgroundColor: 'rgba(79, 70, 229, 0.05)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#4f46e5' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } }, y: { beginAtZero: true, grid: { borderDash: [5, 5] }, ticks: { font: { size: 10, weight: 'bold' } } } }, plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#0f172a', padding: 15, cornerRadius: 15 } } } });
         }
         init();
     </script>
+
     <style>
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
