@@ -174,10 +174,10 @@
             if (charts.line) charts.line.destroy();
             charts.line = new Chart(document.getElementById('yoyChart'), { type: 'line', data: { labels: days, datasets: [
                 { label: 'Mediana', data: Array(31).fill(medianVal), borderColor: '#fb923c', borderDash: [6, 4], borderWidth: 2, pointRadius: 0, fill: false },
-                { label: '2024', data: d24, borderColor: '#e2e8f0', borderWidth: 1, fill: false, tension: 0.1 },
-                { label: '2025', data: d25, borderColor: '#cbd5e1', borderWidth: 2, fill: false, tension: 0.1 },
-                { label: '2026', data: d26, borderColor: '#4f46e5', borderWidth: 5, shadowBlur: 10, shadowColor: 'rgba(79, 70, 229, 0.4)', backgroundColor: 'rgba(79, 70, 229, 0.05)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#4f46e5' }
-            ]}, options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { borderDash: [5, 5] } } }, plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#0f172a', padding: 15, cornerRadius: 15 } } } });
+                { label: '2024', data: d24, borderColor: '#cbd5e1', borderDash: [5, 5], borderWidth: 2, fill: false, tension: 0.1 },
+                { label: '2025', data: d25, borderColor: '#a855f7', borderWidth: 3, fill: false, tension: 0.1 },
+                { label: '2026', data: d26, borderColor: '#4f46e5', borderWidth: 6, shadowBlur: 10, shadowColor: 'rgba(79, 70, 229, 0.4)', backgroundColor: 'rgba(79, 70, 229, 0.05)', fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#4f46e5' }
+            ]}, options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } }, y: { beginAtZero: true, grid: { borderDash: [5, 5] }, ticks: { font: { size: 10, weight: 'bold' } } } }, plugins: { legend: { display: true, position: 'bottom', labels: { usePointStyle: true, boxWidth: 6, font: { size: 10, weight: 'bold' } } }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#0f172a', padding: 15, cornerRadius: 15 } } } });
         }
         init();
     </script>
