@@ -41,11 +41,11 @@
                 <div class="h-6 w-px bg-slate-700"></div>
                 <select id="groupSelector" class="bg-transparent text-white font-bold text-sm outline-none border-none cursor-pointer">
                     <option value="ALL" class="text-slate-800">TODOS OS GRUPOS</option>
-                    <option value="CRAS / CREAS / CENTRO POP" class="text-slate-800">A: CRAS & CREAS & POP</option>
-                    <option value="UNIDADE ACOLHIMENTO" class="text-slate-800">B: UNIDADE ACOLHIMENTO</option>
-                    <option value="OSC & POSTO" class="text-slate-800">C: OSC & POSTO</option>
-                    <option value="CECON / CONVIVÊNCIA" class="text-slate-800">D: CECON / CONVIVÊNCIA</option>
-                    <option value="OUTROS / GESTÃO" class="text-slate-800">E: OUTROS / GESTÃO</option>
+                    <option value="CRAS / CREAS / CENTRO POP" class="text-slate-800">CRAS / CREAS / CENTRO POP</option>
+                    <option value="UNIDADE ACOLHIMENTO" class="text-slate-800">UNIDADE ACOLHIMENTO</option>
+                    <option value="OSC & POSTO" class="text-slate-800">OSC & POSTO</option>
+                    <option value="CECON / CONVIVÊNCIA" class="text-slate-800">CECON / CONVIVÊNCIA</option>
+                    <option value="OUTROS / GESTÃO" class="text-slate-800">OUTROS / GESTÃO</option>
                 </select>
             </div>
         </div>
@@ -107,7 +107,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <div class="card">
                 <h3 class="text-lg font-black text-slate-800 mb-6 uppercase tracking-tighter flex items-center gap-2 text-blue-600">
                     <span class="w-2 h-6 bg-blue-600 rounded-full"></span>
@@ -122,6 +122,14 @@
                 </h3>
                 <div id="bottomUnitsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3"></div>
             </div>
+        </div>
+
+        <div class="card border-l-8 border-slate-800">
+            <h3 class="text-xl font-black text-slate-800 mb-6 uppercase tracking-widest flex items-center gap-3 italic">
+                <svg class="w-6 h-6 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                Glossário da Taxonomia (Regras de Negócio)
+            </h3>
+            <div id="taxonomyDictionary" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6"></div>
         </div>
     </main>
 
@@ -144,6 +152,16 @@
         async function init() {
             biData = await fetch('./data/bi_data_v3.json').then(r => r.json());
             unitMapping = await fetch('./data/unit_mapping_v3.json').then(r => r.json());
+            const dictContainer = document.getElementById('taxonomyDictionary');
+            dictContainer.innerHTML = Object.entries(unitMapping).map(([group, units]) => `
+                <div class="space-y-3">
+                    <p class="text-xs font-black p-2 rounded-lg uppercase tracking-tighter" style="background:${GROUP_COLORS[group]}15; color:${GROUP_COLORS[group]}">
+                        ${group}
+                    </p>
+                    <div class="max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                        ${units.map(u => `<p class="text-[9px] font-bold text-slate-500 border-b border-slate-50 py-1 uppercase">${u}</p>`).join('')}
+                    </div>
+                </div>`).join('');
             document.getElementById('groupSelector').addEventListener('change', updateDashboard);
             document.getElementById('monthSelector').addEventListener('change', updateDashboard);
             updateDashboard();
@@ -194,8 +212,8 @@
             const bottom10 = sortedUnits.slice(-10).reverse();
             const renderUnits = (units, containerId, colorClass) => {
                 document.getElementById(containerId).innerHTML = units.map(([n, t]) => `
-                    <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col gap-1">
-                        <p class="text-[9px] font-black text-slate-700 truncate">${n}</p>
+                    <div class="relative group p-3 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col gap-1" title="${n}">
+                        <p class="text-[9px] font-black text-slate-700 truncate w-full group-hover:whitespace-normal group-hover:bg-white group-hover:z-50 group-hover:relative group-hover:p-1">${n}</p>
                         <p class="text-lg font-black ${colorClass}">${t.toLocaleString()}</p>
                     </div>`).join('');
             };
@@ -258,6 +276,11 @@
         }
         init();
     </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
 
 </body>
 </html>
