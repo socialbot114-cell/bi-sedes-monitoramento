@@ -53,13 +53,16 @@
             <div class="glass-card p-6 border-l-4 border-slate-300"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Total 2024</p><h2 class="text-3xl font-black text-slate-700">813.878</h2></div>
             <div class="glass-card p-6 border-l-4 border-slate-500"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Total 2025</p><h2 class="text-3xl font-black text-slate-700">864.676</h2></div>
             <div class="glass-card p-6 border-l-4 border-indigo-500 bg-indigo-50"><p class="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Acumulado 2026</p><h2 class="text-3xl font-black text-indigo-600">155.858</h2></div>
-            <div class="glass-card p-6 border-l-4 border-emerald-500"><p class="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Média Anual (Triênio)</p><h2 class="text-3xl font-black text-slate-700" id="ann-avg">---</h2></div>
+            <div class="glass-card p-6 border-l-4 border-emerald-500"><p class="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Média Anual (24-25)</p><h2 class="text-3xl font-black text-slate-700" id="ann-avg">---</h2></div>
         </div>
 
         <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 ml-2">Performance do Mês Selecionado</p>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
             <div class="glass-card p-6 kpi-gradient-indigo text-white shadow-xl shadow-indigo-200"><p class="text-[9px] font-black text-indigo-200 uppercase tracking-widest">Volume Mês (2026)</p><h2 class="text-3xl font-black" id="m-2026">---</h2></div>
-            <div class="glass-card p-6 bg-white border-b-4 border-purple-500"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Volume Mês (2025)</p><h2 class="text-3xl font-black" id="m-2025">---</h2></div>
+            <div class="glass-card overflow-hidden grid grid-cols-2 divide-x divide-slate-100 p-0 border-b-4 border-purple-500">
+                <div class="p-6 text-center"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Vol 2025</p><h2 class="text-xl font-black text-slate-700" id="m-2025">---</h2></div>
+                <div class="p-6 text-center"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Vol 2024</p><h2 class="text-xl font-black text-slate-700" id="m-2024">---</h2></div>
+            </div>
             <div class="glass-card p-6 bg-white border-b-4 border-orange-500"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Mediana Diária</p><h2 class="text-3xl font-black" id="m-median">---</h2></div>
             <div class="glass-card p-6 bg-slate-900 text-white"><p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Variação vs 2025</p><h2 class="text-3xl font-black text-emerald-400" id="m-var">---</h2></div>
         </div>
@@ -105,8 +108,11 @@
         async function init() {
             biData = await fetch('./data/bi_data_v3.json').then(r => r.json());
             unitMapping = await fetch('./data/unit_mapping_v3.json').then(r => r.json());
-            const totalHistorico = 813878 + 864676 + 155858;
-            document.getElementById('ann-avg').textContent = Math.round(totalHistorico / 3).toLocaleString();
+            
+            // Lógica Corrigida: Média apenas dos anos completos (2024 e 2025)
+            const total24 = 813878;
+            const total25 = 864676;
+            document.getElementById('ann-avg').textContent = Math.round((total24 + total25) / 2).toLocaleString();
             const dictContainer = document.getElementById('taxonomyDictionary');
             dictContainer.innerHTML = Object.entries(unitMapping).map(([group, units]) => `
                 <div class="bg-slate-50 p-4 rounded-3xl border border-slate-100">
@@ -133,6 +139,7 @@
             document.getElementById('statusAlert').classList.toggle('hidden', !isFuture);
             document.getElementById('m-2026').textContent = t2026.toLocaleString();
             document.getElementById('m-2025').textContent = t2025.toLocaleString();
+            document.getElementById('m-2024').textContent = t2024.toLocaleString();
             document.getElementById('donutTotal').textContent = (isFuture ? t2025 : t2026).toLocaleString();
 
             const varElem = document.getElementById('m-var');
