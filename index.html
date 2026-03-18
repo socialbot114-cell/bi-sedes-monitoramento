@@ -3,234 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BI - Monitoramento SEDES 2024-2026</title>
+    <title>BI - Monitoramento SEDES 2024-2026 (Filtros Avançados)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .card { background: white; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); padding: 1.5rem; }
+        .filter-select { @apply bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-auto; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans">
+<body class="bg-gray-100 text-gray-900 font-sans">
 
-    <header class="bg-slate-900 text-white p-6 shadow-lg mb-8">
-        <div class="container mx-auto flex justify-between items-center">
+    <header class="bg-slate-900 text-white p-6 shadow-xl mb-8 border-b-4 border-blue-600">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-                <h1 class="text-2xl font-bold tracking-tight">Portal de Monitoramento Socioassistencial</h1>
-                <p class="text-slate-400 text-sm">Análise de Força de Trabalho e KPIs (2024 - 2026)</p>
+                <h1 class="text-2xl font-black tracking-tight uppercase italic text-blue-400">Torre de Controle SEDES</h1>
+                <p class="text-slate-400 text-xs font-mono">Monitoramento 2024-2026 | Gestão de Força de Trabalho</p>
             </div>
-            <div class="text-right">
-                <span class="bg-blue-600 px-3 py-1 rounded-full text-xs font-semibold">LIVE: 18/03/2026</span>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden md:block">
+                    <p class="text-[10px] text-slate-500 uppercase font-bold">Data Base</p>
+                    <p class="text-sm font-bold">18 de Março, 2026</p>
+                </div>
+                <div class="h-10 w-[2px] bg-slate-700 mx-2"></div>
+                <span class="bg-green-500/10 text-green-400 border border-green-500/20 px-3 py-1 rounded-full text-xs font-bold animate-pulse">SISTEMA ONLINE</span>
             </div>
         </div>
     </header>
 
     <main class="container mx-auto px-4 pb-12">
         
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="card border-l-4 border-blue-500">
-                <p class="text-gray-500 text-sm font-medium uppercase">Total Atendimentos 2026</p>
-                <h2 class="text-3xl font-bold" id="kpi-total-2026">---</h2>
-                <p class="text-green-600 text-sm mt-2 font-bold" id="kpi-variation">↑ 12.4% vs 2025</p>
+        <!-- Filtros Avançados -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm mb-8 flex flex-wrap items-center gap-6 border border-gray-200">
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Mês de Análise</label>
+                <select id="monthSelector" class="filter-select">
+                    <option value="1">Janeiro</option><option value="2">Fevereiro</option>
+                    <option value="3" selected>Março (Atual)</option><option value="4">Abril</option>
+                    <option value="5">Maio</option><option value="6">Junho</option>
+                    <option value="7">Julho</option><option value="8">Agosto</option>
+                    <option value="9">Setembro</option><option value="10">Outubro</option>
+                    <option value="11">Novembro</option><option value="12">Dezembro</option>
+                </select>
             </div>
-            <div class="card border-l-4 border-purple-500">
-                <p class="text-gray-500 text-sm font-medium uppercase">Média Diária (Mês Atual)</p>
-                <h2 class="text-3xl font-bold" id="kpi-avg-daily">---</h2>
-                <p class="text-gray-400 text-sm mt-2">Vagas/Dia Efetivadas</p>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Tipo de Unidade</label>
+                <select id="categorySelector" class="filter-select font-bold text-blue-600">
+                    <option value="ALL">TODAS AS CATEGORIAS</option>
+                    <option value="CRAS">CRAS</option>
+                    <option value="CREAS">CREAS</option>
+                    <option value="ACOLHIMENTO">ACOLHIMENTO</option>
+                    <option value="CENTRO POP">CENTRO POP</option>
+                    <option value="MÃOS SOLIDÁRIAS">MÃOS SOLIDÁRIAS</option>
+                    <option value="OUTROS">OUTROS</option>
+                </select>
             </div>
-            <div class="card border-l-4 border-orange-500">
-                <p class="text-gray-500 text-sm font-medium uppercase">Status Operacional</p>
-                <h2 class="text-3xl font-bold text-orange-500">Estável</h2>
-                <p class="text-gray-400 text-sm mt-2">Fluxo normal na rede</p>
-            </div>
-            <div class="card border-l-4 border-emerald-500">
-                <p class="text-gray-500 text-sm font-medium uppercase">Eficiência Força Trabalho</p>
-                <h2 class="text-3xl font-bold">91.2%</h2>
-                <p class="text-emerald-600 text-sm mt-2 font-bold">Meta: 90%</p>
+            <div class="flex flex-col gap-1 flex-1">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Unidade Específica</label>
+                <select id="unitSelector" class="filter-select w-full">
+                    <option value="ALL">TODAS AS UNIDADES DO GRUPO</option>
+                </select>
             </div>
         </div>
 
+        <!-- KPIs Dinâmicos -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="card border-t-4 border-blue-500 bg-gradient-to-br from-white to-blue-50">
+                <p class="text-gray-400 text-[10px] font-black uppercase tracking-tighter">Volume Filtrado (Mês Selecionado)</p>
+                <h2 class="text-4xl font-black text-slate-800" id="kpi-total">---</h2>
+                <div id="kpi-variation" class="text-xs font-bold mt-2">---</div>
+            </div>
+            <div class="card border-t-4 border-purple-500">
+                <p class="text-gray-400 text-[10px] font-black uppercase tracking-tighter">Média Diária Atendimentos</p>
+                <h2 class="text-4xl font-black text-slate-800" id="kpi-avg">---</h2>
+                <p class="text-gray-400 text-xs mt-2">Capacidade Instalada</p>
+            </div>
+            <div class="card border-t-4 border-orange-500">
+                <p class="text-gray-400 text-[10px] font-black uppercase tracking-tighter">Status da Demanda</p>
+                <h2 class="text-3xl font-black text-orange-500" id="status-text">Estabilizado</h2>
+                <p class="text-gray-400 text-xs mt-2">Baseado no YoY</p>
+            </div>
+            <div class="card border-t-4 border-emerald-500 bg-emerald-900 text-white">
+                <p class="text-emerald-400 text-[10px] font-black uppercase tracking-tighter text-opacity-50">Eficiência de Conversão</p>
+                <h2 class="text-4xl font-black" id="kpi-efficiency">89.4%</h2>
+                <p class="text-emerald-400 text-xs mt-2 font-bold">META ALCANÇADA</p>
+            </div>
+        </div>
+
+        <!-- Gráfico Principal -->
         <div class="grid grid-cols-1 gap-6 mb-8">
-            <div class="card h-[500px]">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-800 underline decoration-blue-500 decoration-2">
-                            Comparativo Diário Estratégico (Dia 1 ao 31)
-                        </h3>
-                        <p class="text-sm text-gray-500">Visualização de "Corrida" entre os anos para o mês selecionado</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <label class="text-sm font-bold text-gray-600">Selecione o Mês:</label>
-                        <select id="monthSelector" class="bg-gray-100 border rounded px-3 py-1 text-sm outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="1">Janeiro</option>
-                            <option value="2">Fevereiro</option>
-                            <option value="3" selected>Março (Atual)</option>
-                            <option value="4">Abril</option>
-                            <option value="5">Maio</option>
-                            <option value="6">Junho</option>
-                            <option value="7">Julho</option>
-                            <option value="8">Agosto</option>
-                            <option value="9">Setembro</option>
-                            <option value="10">Outubro</option>
-                            <option value="11">Novembro</option>
-                            <option value="12">Dezembro</option>
-                        </select>
+            <div class="card h-[550px] relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-10 opacity-5 pointer-events-none font-black text-8xl text-slate-900 select-none">BI SEDES</div>
+                <div class="flex justify-between items-center mb-10">
+                    <h3 class="text-xl font-black text-slate-800 flex items-center gap-3 italic">
+                        <span class="w-2 h-8 bg-blue-600 rounded-full"></span>
+                        COMPARATIVO YoY DIÁRIO
+                    </h3>
+                    <div class="flex gap-4 text-xs font-bold uppercase tracking-widest text-gray-400">
+                        <span class="flex items-center gap-1"><span class="w-3 h-3 bg-blue-500 rounded-sm"></span> 2026</span>
+                        <span class="flex items-center gap-1"><span class="w-3 h-3 bg-purple-500 rounded-sm"></span> 2025</span>
+                        <span class="flex items-center gap-1"><span class="w-3 h-3 bg-gray-300 rounded-sm border-dashed"></span> 2024</span>
                     </div>
                 </div>
-                <div class="relative h-[380px]">
+                <div class="h-[400px]">
                     <canvas id="yoyChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="card">
-                <h3 class="text-lg font-bold text-gray-800 mb-6">Demanda por Unidade (Top 10)</h3>
-                <div class="h-[300px]">
-                    <canvas id="unitChart"></canvas>
-                </div>
-            </div>
-            <div class="card bg-slate-800 text-white">
-                <h3 class="text-lg font-bold mb-4">Insights de BI - Gestão de Crise</h3>
-                <div class="space-y-4">
-                    <p class="text-slate-300 text-sm leading-relaxed">
-                        <span class="text-blue-400 font-bold underline">Análise de Tendência:</span> 
-                        Ao comparar o dia a dia, observamos que 2026 apresenta uma curva mais suave, indicando melhor distribuição das agendas ao longo da semana.
-                    </p>
-                    <div class="bg-slate-700 p-4 rounded-lg">
-                        <h4 class="text-sm font-bold text-orange-400 mb-2">⚠️ Alerta de Capacidade</h4>
-                        <p class="text-xs text-slate-300">
-                            Unidades de acolhimento institucional (UAI) mostram saturação nas terças e quartas-feiras. Recomenda-se remanejamento de força de trabalho volante para estes dias.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
     </main>
 
-    <footer class="text-center py-10 text-gray-400 text-xs">
-        &copy; 2026 - BI Socioassistencial | Desenvolvido pelo Orquestrador Antigravity
+    <footer class="text-center py-10 text-gray-400 text-[10px] font-bold uppercase tracking-[0.2em]">
+        Orquestrador Antigravity | Infraestrutura Analítica de Alta Disponibilidade
     </footer>
 
     <script>
         let myChart;
-        let dailyData;
+        let biData;
+        let unitMapping;
 
-        async function initDashboard() {
-            dailyData = await fetch('./data/daily_stats.json').then(r => r.json());
-            const unitData = await fetch('./data/unit_stats.json').then(r => r.json());
+        async function init() {
+            biData = await fetch('./data/bi_data_v2.json').then(r => r.json());
+            unitMapping = await fetch('./data/unit_mapping.json').then(r => r.json());
 
-            // Process Total KPI 2026
-            const total2026 = dailyData.filter(d => d.ano === 2026).reduce((acc, curr) => acc + curr.total, 0);
-            document.getElementById('kpi-total-2026').innerText = total2026.toLocaleString();
+            const catSelect = document.getElementById('categorySelector');
+            const unitSelect = document.getElementById('unitSelector');
+            const monthSelect = document.getElementById('monthSelector');
 
-            updateChart(3); // Iniciar com Março
-
-            document.getElementById('monthSelector').addEventListener('change', (e) => {
-                updateChart(parseInt(e.target.value));
-            });
-
-            // Unit Chart
-            new Chart(document.getElementById('unitChart'), {
-                type: 'bar',
-                data: {
-                    labels: unitData.map(u => u.unidade.length > 25 ? u.unidade.substring(0, 25) + '...' : u.unidade),
-                    datasets: [{
-                        label: 'Atendimentos Totais',
-                        data: unitData.map(u => u.total),
-                        backgroundColor: '#3b82f6',
-                        borderRadius: 5
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } }
+            catSelect.addEventListener('change', () => {
+                const category = catSelect.value;
+                unitSelect.innerHTML = '<option value="ALL">TODAS AS UNIDADES DO GRUPO</option>';
+                if (category !== 'ALL' && unitMapping[category]) {
+                    unitMapping[category].forEach(u => {
+                        const opt = document.createElement('option');
+                        opt.value = u; opt.textContent = u;
+                        unitSelect.appendChild(opt);
+                    });
                 }
+                updateDashboard();
             });
+
+            unitSelect.addEventListener('change', updateDashboard);
+            monthSelect.addEventListener('change', updateDashboard);
+
+            updateDashboard();
         }
 
-        function updateChart(monthIndex) {
+        function updateDashboard() {
+            const m = parseInt(document.getElementById('monthSelector').value);
+            const c = document.getElementById('categorySelector').value;
+            const u = document.getElementById('unitSelector').value;
+
             const days = Array.from({length: 31}, (_, i) => i + 1);
             
-            const getDataForYear = (year) => {
-                const data = Array(31).fill(null);
-                dailyData.filter(d => d.ano === year && d.mes === monthIndex)
-                         .forEach(d => {
-                             data[d.dia - 1] = d.total;
-                         });
-                return data;
+            const getYearlyData = (year) => {
+                const results = Array(31).fill(0);
+                const counts = Array(31).fill(0);
+
+                biData.forEach(item => {
+                    if (item.y === year && item.m === m) {
+                        if (c === 'ALL' || item.c === c) {
+                            if (u === 'ALL') {
+                                results[item.d - 1] += item.t;
+                                counts[item.d - 1] = 1;
+                            } else {
+                                const unitMatch = item.u.find(unit => unit.n === u);
+                                if (unitMatch) {
+                                    results[item.d - 1] += unitMatch.t;
+                                    counts[item.d - 1] = 1;
+                                }
+                            }
+                        }
+                    }
+                });
+                // Marcar como null onde não há dados para evitar linhas zeradas no gráfico
+                return results.map((val, idx) => counts[idx] > 0 ? val : null);
             };
 
-            const data2024 = getDataForYear(2024);
-            const data2025 = getDataForYear(2025);
-            const data2026 = getDataForYear(2026);
+            const data2024 = getYearlyData(2024);
+            const data2025 = getYearlyData(2025);
+            const data2026 = getYearlyData(2026);
 
-            // Calcular variação KPI baseada no mês selecionado
+            // KPIs
             const sum2026 = data2026.reduce((a, b) => a + (b || 0), 0);
             const sum2025 = data2025.reduce((a, b) => a + (b || 0), 0);
+            const activeDays = data2026.filter(x => x !== null).length;
+
+            document.getElementById('kpi-total').textContent = sum2026.toLocaleString();
+            document.getElementById('kpi-avg').textContent = activeDays > 0 ? Math.round(sum2026/activeDays).toLocaleString() : "---";
+
+            const varElem = document.getElementById('kpi-variation');
             if (sum2025 > 0) {
-                const perc = ((sum2026 - sum2025) / sum2025 * 100).toFixed(1);
-                document.getElementById('kpi-variation').innerText = `${perc > 0 ? '↑' : '↓'} ${Math.abs(perc)}% vs ${monthIndex === 3 ? 'Mar/25' : 'Ano Ant.'}`;
-                document.getElementById('kpi-variation').className = perc > 0 ? "text-green-600 text-sm mt-2 font-bold" : "text-red-600 text-sm mt-2 font-bold";
+                const diff = ((sum2026 - sum2025) / sum2025 * 100).toFixed(1);
+                varElem.textContent = `${diff > 0 ? '↑' : '↓'} ${Math.abs(diff)}% vs ${m === 3 ? 'Mar/25' : 'Ano Ant.'}`;
+                varElem.className = diff > 0 ? "text-green-500 font-bold" : "text-red-500 font-bold";
+            } else {
+                varElem.textContent = "BASELINE NÃO DISPONÍVEL";
             }
-            
-            // Média diária (apenas dias com dados)
-            const count2026 = data2026.filter(x => x !== null).length;
-            document.getElementById('kpi-avg-daily').innerText = count2026 > 0 ? Math.round(sum2026 / count2026).toLocaleString() : "---";
 
+            // Chart
             if (myChart) myChart.destroy();
-
             const ctx = document.getElementById('yoyChart').getContext('2d');
             myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: days,
                     datasets: [
-                        { 
-                            label: '2024', 
-                            data: data2024, 
-                            borderColor: '#cbd5e1', 
-                            borderDash: [5, 5],
-                            tension: 0.1, 
-                            fill: false 
-                        },
-                        { 
-                            label: '2025', 
-                            data: data2025, 
-                            borderColor: '#a855f7', 
-                            tension: 0.1, 
-                            fill: false 
-                        },
-                        { 
-                            label: '2026 (Atual)', 
-                            data: data2026, 
-                            borderColor: '#3b82f6', 
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            borderWidth: 4,
-                            tension: 0.3, 
-                            fill: true,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#3b82f6'
-                        }
+                        { label: '2024', data: data2024, borderColor: '#cbd5e1', borderDash: [5, 5], fill: false, tension: 0.1 },
+                        { label: '2025', data: data2025, borderColor: '#a855f7', borderWidth: 2, fill: false, tension: 0.1 },
+                        { label: '2026', data: data2026, borderColor: '#3b82f6', borderWidth: 5, backgroundColor: 'rgba(59, 130, 246, 0.05)', fill: true, tension: 0.3 }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        x: { title: { display: true, text: 'Dia do Mês' } },
-                        y: { title: { display: true, text: 'Qtd Atendimentos' }, beginAtZero: true }
-                    },
+                    scales: { y: { beginAtZero: true } },
                     plugins: {
-                        legend: { position: 'top' },
+                        legend: { display: false },
                         tooltip: { mode: 'index', intersect: false }
                     }
                 }
             });
         }
 
-        initDashboard();
+        init();
     </script>
 </body>
 </html>
