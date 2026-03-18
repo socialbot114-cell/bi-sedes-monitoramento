@@ -103,7 +103,64 @@
 
     <footer class="text-center py-20 text-slate-300 text-[10px] font-black uppercase tracking-[0.8em]">Orquestrador Antigravity | Advanced Analytics</footer>
 
+    <!-- Botão Flutuante CTA -->
+    <div class="fixed bottom-8 left-8 z-[100]">
+        <button onclick="toggleInfo()" class="bg-indigo-600 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center hover:bg-indigo-700 transition-all hover:scale-110 animate-bounce group relative">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.444 1.103m.444 1.103c0 .442-.358.8-.8.8s-.8-.358-.8-.8.358-.8.8-.8zm1.407 5.407A9 9 0 1112 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"></path></svg>
+            <span class="absolute -top-12 left-0 bg-slate-900 text-white text-[10px] font-black px-3 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">COMO FUNCIONA?</span>
+        </button>
+    </div>
+
+    <!-- Modal de Informações -->
+    <div id="infoModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div class="glass-card max-w-2xl w-full p-10 max-h-[80vh] overflow-y-auto custom-scrollbar relative">
+            <button onclick="toggleInfo()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-900 font-black text-xl">&times;</button>
+            <h2 class="text-3xl font-black text-indigo-600 mb-8 italic uppercase tracking-tighter">Guia de Metodologia & Metrics</h2>
+            
+            <div class="space-y-8">
+                <section>
+                    <h3 class="font-black text-slate-800 uppercase text-xs tracking-widest mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-indigo-500 rounded-full"></span> 
+                        Nossa Metodologia (YoY)
+                    </h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">
+                        Utilizamos a análise <strong>Year-over-Year (Ano sobre Ano)</strong> para comparar o desempenho diário atual com o histórico de 2024 e 2025. Isso permite identificar picos sazonais de demanda e validar se a rede está em ritmo de crescimento ou estabilidade.
+                    </p>
+                </section>
+
+                <section>
+                    <h3 class="font-black text-slate-800 uppercase text-xs tracking-widest mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-orange-500 rounded-full"></span> 
+                        Régua de Mediana
+                    </h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">
+                        Diferente da média, a <strong>Mediana Diária</strong> (nossa linha neon) mostra o valor central de atendimentos. Ela é imune a picos extremos, servindo como uma régua fiel de "dia normal" de trabalho para a SEDES GDF.
+                    </p>
+                </section>
+
+                <section>
+                    <h3 class="font-black text-slate-800 uppercase text-xs tracking-widest mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full"></span> 
+                        Acompanhamento da Força de Trabalho
+                    </h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">
+                        Cruzamos o volume de atendimentos com a tipologia das unidades (Taxonomia). Se uma unidade do <strong>Grupo A (CRAS)</strong> apresenta volume muito acima da mediana histórico, sinalizamos a necessidade de reforço na força de trabalho ou remanejamento de servidores.
+                    </p>
+                </section>
+            </div>
+            
+            <div class="mt-10 p-6 bg-indigo-50 rounded-3xl border border-indigo-100">
+                <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Nota Técnica</p>
+                <p class="text-xs text-indigo-900 mt-2 italic font-medium">Os dados de 2026 são atualizados em tempo real. Os anos de 2024 e 2025 servem como o 'Padrão Ouro' para planejamento orçamentário e de RH.</p>
+            </div>
+        </div>
+    </div>
+
     <script>
+        function toggleInfo() {
+            const modal = document.getElementById('infoModal');
+            modal.classList.toggle('hidden');
+        }
         let charts = {}; let biData; let unitMapping;
         const GROUP_COLORS = {"CRAS / CREAS / CENTRO POP": "#4f46e5","UNIDADE ACOLHIMENTO": "#a855f7","OSC & POSTO": "#f59e0b","CECON / CONVIVÊNCIA": "#10b981","OUTROS / GESTÃO": "#64748b"};
 
