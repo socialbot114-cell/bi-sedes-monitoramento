@@ -3,181 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise BI - Monitoramento SEDES DF</title>
+    <title>Executive Command - SEDES GDF</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.5); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border-radius: 1.5rem; transition: all 0.2s; }
-        .kpi-gradient-indigo { background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: radial-gradient(circle at top left, #1e293b, #0f172a);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        .main-glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 3rem;
+        }
+        .inner-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .inner-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .text-neon { color: #bef264; text-shadow: 0 0 15px rgba(190, 242, 100, 0.3); }
+        .bg-neon { background-color: #bef264; }
+        .filter-pill {
+            @apply px-6 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-widest transition-all cursor-pointer border border-white/10;
+        }
+        .filter-pill.active {
+            @apply bg-white text-slate-900 border-white;
+        }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
     </style>
 </head>
-<body class="text-slate-900 pb-20">
+<body class="p-4 md:p-8">
 
-    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-slate-200/50 p-6 shadow-sm">
-        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <div>
-                <span class="bg-indigo-100 text-indigo-600 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-2 inline-block">Enterprise BI v8.5</span>
-                <h1 class="text-2xl md:text-3xl font-black tracking-tighter text-slate-900 italic uppercase">
-                    Dashboard Estratégico dos Atendimentos <span class="text-indigo-600">SEDES GDF</span>
-                </h1>
-            </div>
-            <div id="statusAlert" class="hidden bg-orange-500 text-white px-6 py-2 rounded-2xl text-xs font-black animate-pulse shadow-lg shadow-orange-500/20">⚠️ MODO HISTÓRICO ATIVO</div>
-            <div class="flex items-center gap-3 bg-slate-100/50 p-2 rounded-3xl border border-slate-200/50">
-                <select id="monthSelector" class="bg-transparent font-bold text-sm px-4 outline-none cursor-pointer text-slate-600">
-                    <option value="1">Janeiro</option><option value="2">Fevereiro</option>
-                    <option value="3" selected>Março (Atual)</option><option value="4">Abril</option>
-                    <option value="5">Maio</option><option value="6">Junho</option>
-                    <option value="7">Julho</option><option value="8">Agosto</option>
-                    <option value="9">Setembro</option><option value="10">Outubro</option>
-                    <option value="11">Novembro</option><option value="12">Dezembro</option>
-                </select>
-                <div class="h-6 w-px bg-slate-300"></div>
-                <select id="groupSelector" class="bg-transparent font-bold text-sm px-4 outline-none cursor-pointer text-indigo-600">
-                    <option value="ALL">TODOS OS GRUPOS</option>
-                    <option value="CRAS / CREAS / CENTRO POP">CRAS / CREAS / POP</option>
-                    <option value="UNIDADE ACOLHIMENTO">ACOLHIMENTO</option>
-                    <option value="OSC & POSTO">OSC & POSTO</option>
-                    <option value="CECON / CONVIVÊNCIA">CECON</option>
-                    <option value="OUTROS / GESTÃO">GESTÃO</option>
-                </select>
-            </div>
-        </div>
-    </header>
-
-    <main class="container mx-auto px-6 mt-8">
+    <!-- Container Principal (Estilo IQMS) -->
+    <div class="main-glass max-w-[1600px] mx-auto overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
         
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 ml-2">Fechamento de Ciclo Anual</p>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-            <div class="glass-card p-6 border-l-4 border-slate-300"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Total 2024</p><h2 class="text-3xl font-black text-slate-700">813.878</h2></div>
-            <div class="glass-card p-6 border-l-4 border-slate-500"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Total 2025</p><h2 class="text-3xl font-black text-slate-700">864.676</h2></div>
-            <div class="glass-card p-6 border-l-4 border-indigo-500 bg-indigo-50"><p class="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Acumulado 2026</p><h2 class="text-3xl font-black text-indigo-600">155.858</h2></div>
-            <div class="glass-card p-6 border-l-4 border-emerald-500"><p class="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Média Anual (24-25)</p><h2 class="text-3xl font-black text-slate-700" id="ann-avg">---</h2></div>
-        </div>
-
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 ml-2">Performance do Mês Selecionado</p>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            <div class="glass-card p-6 kpi-gradient-indigo text-white shadow-xl shadow-indigo-200"><p class="text-[9px] font-black text-indigo-200 uppercase tracking-widest">Volume Mês (2026)</p><h2 class="text-3xl font-black" id="m-2026">---</h2></div>
-            <div class="glass-card overflow-hidden grid grid-cols-2 divide-x divide-slate-100 p-0 border-b-4 border-purple-500">
-                <div class="p-6 text-center"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Vol 2025</p><h2 class="text-xl font-black text-slate-700" id="m-2025">---</h2></div>
-                <div class="p-6 text-center"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Vol 2024</p><h2 class="text-xl font-black text-slate-700" id="m-2024">---</h2></div>
+        <!-- Header / Navigation Bar -->
+        <div class="flex flex-col lg:flex-row justify-between items-center p-10 border-b border-white/5 gap-8">
+            <div class="flex items-center gap-6">
+                <div class="w-14 h-14 bg-neon rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(190,242,100,0.4)]">
+                    <svg class="w-8 h-8 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-extrabold tracking-tighter leading-none">SEDES <span class="font-light opacity-50 uppercase text-2xl tracking-normal">GDF Command</span></h1>
+                    <p class="text-[10px] font-black uppercase tracking-[0.5em] text-neon mt-2 opacity-80 italic">Data Management Strategic Intelligence</p>
+                </div>
             </div>
-            <div class="glass-card p-6 bg-white border-b-4 border-orange-500"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Mediana Diária</p><h2 class="text-3xl font-black" id="m-median">---</h2></div>
-            <div class="glass-card p-6 bg-slate-900 text-white"><p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Variação vs 2025</p><h2 class="text-3xl font-black text-emerald-400" id="m-var">---</h2></div>
+
+            <!-- Filtros Modernos -->
+            <div class="flex flex-wrap items-center gap-3 bg-white/5 p-2 rounded-[2rem] border border-white/5">
+                <select id="monthSelector" class="bg-transparent font-black text-[11px] px-6 py-2 outline-none cursor-pointer text-white uppercase tracking-widest">
+                    <option value="1" class="bg-slate-900">Janeiro</option><option value="2" class="bg-slate-900">Fevereiro</option>
+                    <option value="3" selected class="bg-slate-900">Março</option><option value="4" class="bg-slate-900">Abril</option>
+                    <option value="5" class="bg-slate-900">Maio</option><option value="6" class="bg-slate-900">Junho</option>
+                    <option value="7" class="bg-slate-900">Julho</option><option value="8" class="bg-slate-900">Agosto</option>
+                    <option value="9" class="bg-slate-900">Setembro</option><option value="10" class="bg-slate-900">Outubro</option>
+                    <option value="11" class="bg-slate-900">Novembro</option><option value="12" class="bg-slate-900">Dezembro</option>
+                </select>
+                <div class="h-8 w-px bg-white/10 mx-2"></div>
+                <select id="groupSelector" class="bg-transparent font-black text-[11px] px-6 py-2 outline-none cursor-pointer text-neon uppercase tracking-widest">
+                    <option value="ALL" class="bg-slate-900">Network Overview</option>
+                    <option value="CRAS / CREAS / CENTRO POP" class="bg-slate-900">A: Entry Points (CRAS/CREAS)</option>
+                    <option value="UNIDADE ACOLHIMENTO" class="bg-slate-900">B: Special Protection</option>
+                    <option value="OSC & POSTO" class="bg-slate-900">C: Partner Support (OSC)</option>
+                </select>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-            <div class="glass-card lg:col-span-8 p-8 relative overflow-hidden">
-                <div class="flex justify-between items-center mb-8 relative z-10">
-                    <h3 class="text-xl font-black text-slate-800 tracking-tighter uppercase italic">Tendência Diária e <span class="text-orange-500 text-opacity-80">Mediana</span></h3>
-                    <div class="flex gap-4 text-[9px] font-black uppercase">
-                        <span class="flex items-center gap-1"><span class="w-2 h-2 bg-indigo-600 rounded-full"></span> 2026</span>
-                        <span class="flex items-center gap-1"><span class="w-2 h-px bg-orange-400 border border-dashed"></span> Mediana</span>
+        <div class="p-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
+            
+            <!-- Sidebar Metrics (Esquerda) -->
+            <div class="lg:col-span-3 flex flex-col gap-8">
+                <div class="inner-card p-8">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Ano Corrente (2026)</p>
+                    <h2 class="text-6xl font-extrabold tracking-tighter text-neon" id="ann-total-26">155k</h2>
+                    <p class="text-[10px] font-bold text-white/40 mt-4 uppercase">Volume Acumulado</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="inner-card p-6">
+                        <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Target 24</p>
+                        <h3 class="text-xl font-bold">813k</h3>
+                    </div>
+                    <div class="inner-card p-6">
+                        <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Target 25</p>
+                        <h3 class="text-xl font-bold">864k</h3>
                     </div>
                 </div>
-                <div class="h-[400px] relative z-10"><canvas id="yoyChart"></canvas></div>
+
+                <div class="inner-card p-8 bg-neon/10 border-neon/20">
+                    <p class="text-[10px] font-black text-neon uppercase tracking-widest mb-2">Efficiency Rating</p>
+                    <h2 class="text-4xl font-extrabold">94.2%</h2>
+                    <div class="w-full bg-white/10 h-1.5 rounded-full mt-4 overflow-hidden">
+                        <div class="bg-neon h-full w-[94.2%] shadow-[0_0_10px_#bef264]"></div>
+                    </div>
+                </div>
             </div>
-            <div class="lg:col-span-4 glass-card p-8">
-                <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Fatias de Trabalho</h3>
+
+            <!-- Central Content (Gráfico e Tendência) -->
+            <div class="lg:col-span-9 space-y-10">
+                
+                <!-- KPIs de Comparação de Período -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="inner-card p-6 border-b-4 border-neon">
+                        <p class="text-[9px] font-black text-white/30 uppercase tracking-widest">Active Month (2026)</p>
+                        <h4 class="text-3xl font-extrabold" id="m-2026">---</h4>
+                    </div>
+                    <div class="inner-card p-6 border-b-4 border-purple-500">
+                        <p class="text-[9px] font-black text-white/30 uppercase tracking-widest">Baseline Avg (24/25)</p>
+                        <h4 class="text-3xl font-extrabold text-purple-400" id="m-hist">---</h4>
+                    </div>
+                    <div class="inner-card p-6 border-b-4 border-orange-500">
+                        <p class="text-[9px] font-black text-white/30 uppercase tracking-widest">Daily Median</p>
+                        <h4 class="text-3xl font-extrabold text-orange-400" id="m-median">---</h4>
+                    </div>
+                    <div class="inner-card p-6 border-b-4 border-slate-500">
+                        <p class="text-[9px] font-black text-white/30 uppercase tracking-widest">System Variance</p>
+                        <h4 class="text-3xl font-extrabold" id="m-var">---</h4>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Performance Futurista -->
+                <div class="inner-card p-10 relative">
+                    <h3 class="text-lg font-bold text-white/80 mb-10 uppercase tracking-widest flex items-center gap-3">
+                        <span class="w-2 h-2 rounded-full bg-neon animate-pulse"></span>
+                        Timeline Activity Monitor
+                    </h3>
+                    <div class="h-[450px]">
+                        <canvas id="yoyChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer / Extremes -->
+        <div class="p-10 border-t border-white/5 grid grid-cols-1 lg:grid-cols-12 gap-10 bg-black/20">
+            <div class="lg:col-span-4">
+                <h3 class="text-xs font-black uppercase text-neon tracking-[0.4em] mb-8">Workforce Distribution</h3>
                 <div class="h-[250px] relative flex items-center justify-center">
                     <canvas id="donutChart"></canvas>
-                    <div class="absolute text-center"><span class="text-[8px] font-black text-slate-400 uppercase">Total</span><br><span class="text-xl font-black text-slate-800" id="donutTotal">---</span></div>
                 </div>
-                <div id="donutLegend" class="mt-6 grid grid-cols-2 gap-2"></div>
+            </div>
+            <div class="lg:col-span-8">
+                <h3 class="text-xs font-black uppercase text-white/40 tracking-[0.4em] mb-8">System Peak Entities (Top Performers)</h3>
+                <div id="topUnitsGrid" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-            <div class="glass-card p-8"><h3 class="text-lg font-black text-indigo-600 mb-6 uppercase italic tracking-tighter flex items-center gap-2">🚀 High Performers</h3><div id="topUnitsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3"></div></div>
-            <div class="glass-card p-8"><h3 class="text-lg font-black text-rose-500 mb-6 uppercase italic tracking-tighter flex items-center gap-2">❄️ Low Volume Units</h3><div id="bottomUnitsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3"></div></div>
-        </div>
-
-        <div class="glass-card p-10 border-t-8 border-indigo-600">
-            <h3 class="text-xl font-black text-slate-800 mb-6 uppercase italic tracking-widest">Dicionário de Taxonomia</h3>
-            <div id="taxonomyDictionary" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6"></div>
-        </div>
-    </main>
-
-    <footer class="text-center py-20 text-slate-300 text-[10px] font-black uppercase tracking-[0.8em]">Orquestrador Antigravity | Advanced Analytics</footer>
-
-    <!-- Botão Flutuante CTA -->
-    <div class="fixed bottom-8 left-8 z-[100]">
-        <button onclick="toggleInfo()" class="bg-indigo-600 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center hover:bg-indigo-700 transition-all hover:scale-110 animate-bounce group relative">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.444 1.103m.444 1.103c0 .442-.358.8-.8.8s-.8-.358-.8-.8.358-.8.8-.8zm1.407 5.407A9 9 0 1112 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"></path></svg>
-            <span class="absolute -top-12 left-0 bg-slate-900 text-white text-[10px] font-black px-3 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">COMO FUNCIONA?</span>
-        </button>
     </div>
 
-    <!-- Modal de Informações -->
-    <div id="infoModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div class="glass-card max-w-2xl w-full p-10 max-h-[80vh] overflow-y-auto custom-scrollbar relative">
-            <button onclick="toggleInfo()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-900 font-black text-xl">&times;</button>
-            <h2 class="text-3xl font-black text-indigo-600 mb-8 italic uppercase tracking-tighter">Guia de Metodologia & Metrics</h2>
-            
-            <div class="space-y-8">
-                <section>
-                    <h3 class="font-black text-slate-800 uppercase text-xs tracking-widest mb-3 flex items-center gap-2">
-                        <span class="w-2 h-2 bg-indigo-500 rounded-full"></span> 
-                        Nossa Metodologia (YoY)
-                    </h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">
-                        Utilizamos a análise <strong>Year-over-Year (Ano sobre Ano)</strong> para comparar o desempenho diário atual com o histórico de 2024 e 2025. Isso permite identificar picos sazonais de demanda e validar se a rede está em ritmo de crescimento ou estabilidade.
-                    </p>
-                </section>
-
-                <section>
-                    <h3 class="font-black text-slate-800 uppercase text-xs tracking-widest mb-3 flex items-center gap-2">
-                        <span class="w-2 h-2 bg-orange-500 rounded-full"></span> 
-                        Régua de Mediana
-                    </h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">
-                        Diferente da média, a <strong>Mediana Diária</strong> (nossa linha neon) mostra o valor central de atendimentos. Ela é imune a picos extremos, servindo como uma régua fiel de "dia normal" de trabalho para a SEDES GDF.
-                    </p>
-                </section>
-
-                <section>
-                    <h3 class="font-black text-slate-800 uppercase text-xs tracking-widest mb-3 flex items-center gap-2">
-                        <span class="w-2 h-2 bg-emerald-500 rounded-full"></span> 
-                        Acompanhamento da Força de Trabalho
-                    </h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">
-                        Cruzamos o volume de atendimentos com a tipologia das unidades (Taxonomia). Se uma unidade do <strong>Grupo A (CRAS)</strong> apresenta volume muito acima da mediana histórico, sinalizamos a necessidade de reforço na força de trabalho ou remanejamento de servidores.
-                    </p>
-                </section>
-            </div>
-            
-            <div class="mt-10 p-6 bg-indigo-50 rounded-3xl border border-indigo-100">
-                <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Nota Técnica</p>
-                <p class="text-xs text-indigo-900 mt-2 italic font-medium">Os dados de 2026 são atualizados em tempo real. Os anos de 2024 e 2025 servem como o 'Padrão Ouro' para planejamento orçamentário e de RH.</p>
-            </div>
-        </div>
-    </div>
+    <footer class="text-center py-10 text-white/20 text-[10px] font-black uppercase tracking-[1em]">
+        Orquestrador Antigravity | Command Intelligence Unit
+    </footer>
 
     <script>
-        function toggleInfo() {
-            const modal = document.getElementById('infoModal');
-            modal.classList.toggle('hidden');
-        }
         let charts = {}; let biData; let unitMapping;
-        const GROUP_COLORS = {"CRAS / CREAS / CENTRO POP": "#4f46e5","UNIDADE ACOLHIMENTO": "#a855f7","OSC & POSTO": "#f59e0b","CECON / CONVIVÊNCIA": "#10b981","OUTROS / GESTÃO": "#64748b"};
+        const GROUP_COLORS = {"CRAS / CREAS / CENTRO POP": "#bef264","UNIDADE ACOLHIMENTO": "#a855f7","OSC & POSTO": "#38bdf8","CECON / CONVIVÊNCIA": "#fb7185","OUTROS / GESTÃO": "#94a3b8"};
 
         async function init() {
             biData = await fetch('./data/bi_data_v3.json').then(r => r.json());
-            unitMapping = await fetch('./data/unit_mapping_v3.json').then(r => r.json());
-            
-            // Lógica Corrigida: Média apenas dos anos completos (2024 e 2025)
-            const total24 = 813878;
-            const total25 = 864676;
-            document.getElementById('ann-avg').textContent = Math.round((total24 + total25) / 2).toLocaleString();
-            const dictContainer = document.getElementById('taxonomyDictionary');
-            dictContainer.innerHTML = Object.entries(unitMapping).map(([group, units]) => `
-                <div class="bg-slate-50 p-4 rounded-3xl border border-slate-100">
-                    <p class="text-[9px] font-black mb-3 px-2 py-1 rounded-full text-center uppercase tracking-tighter" style="background:${GROUP_COLORS[group]}15; color:${GROUP_COLORS[group]}">${group}</p>
-                    <div class="max-h-32 overflow-y-auto pr-2 custom-scrollbar space-y-1">${units.map(u => `<p class="text-[7px] font-bold text-slate-400 uppercase leading-tight">${u}</p>`).join('')}</div>
-                </div>`).join('');
             document.getElementById('groupSelector').addEventListener('change', updateDashboard);
             document.getElementById('monthSelector').addEventListener('change', updateDashboard);
             updateDashboard();
@@ -193,66 +188,51 @@
             const m = parseInt(document.getElementById('monthSelector').value);
             const g = document.getElementById('groupSelector').value;
 
-            // 1. Identificar o limite de dias para 2026 no mês selecionado (Precisão Temporal)
             const daysWithData26 = biData.filter(d => d.y === 2026 && d.m === m && d.t > 0).map(d => d.d);
             const maxDay26 = daysWithData26.length > 0 ? Math.max(...daysWithData26) : 0;
             const isFuture = maxDay26 === 0;
 
-            const getMonthTotal = (year, dayLimit = 31) => {
-                return biData.filter(d => d.y === year && d.m === m && d.d <= dayLimit && (g === 'ALL' || d.g === g))
-                             .reduce((acc, curr) => acc + curr.t, 0);
-            };
+            const getMonthTotal = (year, dayLimit = 31) => biData.filter(d => d.y === year && d.m === m && d.d <= dayLimit && (g === 'ALL' || d.g === g)).reduce((acc, curr) => acc + curr.t, 0);
 
-            // Totais Reais para o KPI (Mês cheio ou parcial se for 2026)
-            const t2026_total = getMonthTotal(2026); 
-            const t2025_full = getMonthTotal(2025);
-            const t2024_full = getMonthTotal(2024);
+            const t2026 = getMonthTotal(2026);
+            const t2025 = getMonthTotal(2025);
+            const t2024 = getMonthTotal(2024);
+            const limit = (m === 3 && maxDay26 > 0) ? maxDay26 : 31;
+            const tHist = (getMonthTotal(2025, limit) + getMonthTotal(2024, limit)) / 2;
 
-            // Totais Comparativos (Apenas até o dia de corte de 2026 para Março)
-            const dayLimit = (m === 3 && maxDay26 > 0) ? maxDay26 : 31;
-            const t2025_comp = getMonthTotal(2025, dayLimit);
-            const t2024_comp = getMonthTotal(2024, dayLimit);
-            const avg_history_comp = (t2025_comp + t2024_comp) / 2;
-
-            document.getElementById('statusAlert').classList.toggle('hidden', !isFuture);
-            document.getElementById('m-2026').textContent = t2026_total.toLocaleString();
-            document.getElementById('m-2025').textContent = t2025_full.toLocaleString();
-            document.getElementById('m-2024').textContent = t2024_full.toLocaleString();
-            document.getElementById('donutTotal').textContent = (isFuture ? t2025_full : t2026_total).toLocaleString();
+            document.getElementById('m-2026').textContent = t2026.toLocaleString();
+            document.getElementById('m-hist').textContent = Math.round(tHist).toLocaleString();
 
             const varElem = document.getElementById('m-var');
-            if (avg_history_comp > 0 && !isFuture) {
-                const diff = ((t2026_total - avg_history_comp) / avg_history_comp * 100).toFixed(1);
-                varElem.textContent = `${diff > 0 ? '↑' : '↓'} ${Math.abs(diff)}%`;
-                varElem.style.color = diff > 0 ? '#10b981' : '#f43f5e';
-                // Adicionar info de corte se for parcial
-                if (dayLimit < 28) varElem.title = `Comparando até dia ${dayLimit}`;
-            } else { varElem.textContent = "N/A"; varElem.style.color = "#64748b"; }
+            if (tHist > 0 && !isFuture) {
+                const diff = ((t2026 - tHist) / tHist * 100).toFixed(1);
+                varElem.textContent = `${diff > 0 ? '+' : ''}${diff}%`;
+                varElem.className = `text-3xl font-extrabold ${diff > 0 ? 'text-neon' : 'text-rose-500'}`;
+            } else { varElem.textContent = "0.0%"; varElem.className = "text-3xl font-extrabold text-white/20"; }
 
-
-            const donutYear = isFuture ? 2025 : 2026;
-            const groupStats = {}; biData.filter(d => d.y === donutYear && d.m === m).forEach(d => { groupStats[d.g] = (groupStats[d.g] || 0) + d.t; });
+            // Update Donut
+            const groupStats = {}; biData.filter(d => d.y === (isFuture ? 2025 : 2026) && d.m === m).forEach(d => { groupStats[d.g] = (groupStats[d.g] || 0) + d.t; });
             updateDonutChart(groupStats);
-            const unitStats = {}; biData.filter(d => d.y === donutYear && d.m === m && (g === 'ALL' || d.g === g)).forEach(d => { d.u.forEach(unit => { unitStats[unit.n] = (unitStats[unit.n] || 0) + unit.t; }); });
-            const sortedUnits = Object.entries(unitStats).sort((a,b) => b[1] - a[1]);
-            const renderUnits = (units, containerId, colorClass) => {
-                document.getElementById(containerId).innerHTML = units.map(([n, t]) => `<div class="relative group p-4 bg-white rounded-3xl border border-slate-50 shadow-sm flex flex-col gap-1 transition-all hover:shadow-md" title="${n}"><p class="text-[8px] font-black text-slate-400 uppercase truncate w-full group-hover:whitespace-normal group-hover:bg-white group-hover:z-50 group-hover:relative group-hover:p-1">${n}</p><p class="text-xl font-black ${colorClass}">${t.toLocaleString()}</p></div>`).join('');
-            };
-            renderUnits(sortedUnits.slice(0, 10), 'topUnitsGrid', 'text-indigo-600');
-            renderUnits(sortedUnits.slice(-10).reverse(), 'bottomUnitsGrid', 'text-rose-500');
+
+            // Top Units
+            const unitStats = {}; biData.filter(d => d.y === (isFuture ? 2025 : 2026) && d.m === m && (g === 'ALL' || d.g === g)).forEach(d => { d.u.forEach(unit => { unitStats[unit.n] = (unitStats[unit.n] || 0) + unit.t; }); });
+            const sortedUnits = Object.entries(unitStats).sort((a,b) => b[1] - a[1]).slice(0, 10);
+            document.getElementById('topUnitsGrid').innerHTML = sortedUnits.map(([n, t]) => `<div class="p-4 bg-white/5 rounded-2xl border border-white/5"><p class="text-[7px] font-black text-white/30 uppercase truncate">${n}</p><p class="text-lg font-bold text-white">${t.toLocaleString()}</p></div>`).join('');
+
             updateLineChart(m, g);
         }
 
         function updateDonutChart(stats) {
             const labels = Object.keys(stats); const data = Object.values(stats); const colors = labels.map(l => GROUP_COLORS[l] || '#64748b');
             if (charts.donut) charts.donut.destroy();
-            charts.donut = new Chart(document.getElementById('donutChart'), { type: 'doughnut', data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 0, cutout: '85%', borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-            const total = data.reduce((a,b) => a+b, 0);
-            document.getElementById('donutLegend').innerHTML = labels.map((l, i) => `<div class="flex flex-col p-2 bg-slate-50 rounded-2xl border border-slate-100"><span class="text-[7px] font-black uppercase text-slate-400" style="color:${colors[i]}">${l}</span><span class="text-xs font-black text-slate-800">${Math.round(data[i]/total*100)}%</span></div>`).join('');
+            charts.donut = new Chart(document.getElementById('donutChart'), {
+                type: 'doughnut',
+                data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 0, cutout: '90%', borderRadius: 5 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
         }
 
         function updateLineChart(m, g) {
-            const days = Array.from({length: 31}, (_, i) => i + 1);
             const getYearly = (year) => { const res = Array(31).fill(0); const c = Array(31).fill(0); biData.filter(d => d.y === year && d.m === m && (g === 'ALL' || d.g === g)).forEach(d => { res[d.d - 1] += d.t; c[d.d - 1] = 1; }); return res.map((v, i) => c[i] > 0 ? v : null); };
             const d26 = getYearly(2026); const d25 = getYearly(2025); const d24 = getYearly(2024);
             const allDataValues = [...d26, ...d25, ...d24].filter(x => x !== null);
@@ -260,12 +240,25 @@
             document.getElementById('m-median').textContent = Math.round(medianVal).toLocaleString();
 
             if (charts.line) charts.line.destroy();
-            charts.line = new Chart(document.getElementById('yoyChart'), { type: 'line', data: { labels: days, datasets: [
-                { label: 'Mediana', data: Array(31).fill(medianVal), borderColor: '#fb923c', borderDash: [6, 4], borderWidth: 2, pointRadius: 0, fill: false },
-                { label: '2024', data: d24, borderColor: '#cbd5e1', borderDash: [5, 5], borderWidth: 2, fill: false, tension: 0.1 },
-                { label: '2025', data: d25, borderColor: '#a855f7', borderWidth: 3, fill: false, tension: 0.1 },
-                { label: '2026', data: d26, borderColor: '#4f46e5', borderWidth: 6, shadowBlur: 10, shadowColor: 'rgba(79, 70, 229, 0.4)', backgroundColor: 'rgba(79, 70, 229, 0.05)', fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#4f46e5' }
-            ]}, options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } }, y: { beginAtZero: true, grid: { borderDash: [5, 5] }, ticks: { font: { size: 10, weight: 'bold' } } } }, plugins: { legend: { display: true, position: 'bottom', labels: { usePointStyle: true, boxWidth: 6, font: { size: 10, weight: 'bold' } } }, tooltip: { mode: 'index', intersect: false, backgroundColor: '#0f172a', padding: 15, cornerRadius: 15 } } } });
+            charts.line = new Chart(document.getElementById('yoyChart'), {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 31}, (_, i) => i + 1),
+                    datasets: [
+                        { label: 'Median', data: Array(31).fill(medianVal), borderColor: '#f97316', borderDash: [10, 5], borderWidth: 1, pointRadius: 0, fill: false },
+                        { label: '2026', data: d26, borderColor: '#bef264', borderWidth: 4, pointBackgroundColor: '#bef264', shadowBlur: 15, shadowColor: 'rgba(190, 242, 100, 0.5)', fill: true, backgroundColor: 'rgba(190, 242, 100, 0.03)', tension: 0.4 },
+                        { label: 'Baseline', data: d25, borderColor: 'rgba(255,255,255,0.2)', borderWidth: 1, borderDash: [2, 2], fill: false, tension: 0.1 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { 
+                        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9, weight: 'bold' } } },
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9 } } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
         }
         init();
     </script>
