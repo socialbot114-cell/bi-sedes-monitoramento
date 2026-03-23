@@ -53,9 +53,9 @@
                 <h2 class="text-4xl font-black text-[#bef264]" id="v26">---</h2>
                 <div id="vVar" class="text-[10px] font-bold mt-2">---</div>
             </div>
-            <div class="glass-card p-6"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Volume 2025</p><h2 class="text-3xl font-black text-slate-700" id="v25">---</h2></div>
+            <div class="glass-card p-6"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Pico do Mês</p><h2 class="text-3xl font-black text-indigo-600" id="vPeak">---</h2><p class="text-[8px] font-bold text-slate-400 uppercase">Máximo Diário</p></div>
             <div class="glass-card p-6 border-b-4 border-orange-400"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Mediana Diária</p><h2 class="text-3xl font-black text-orange-500" id="vMed">---</h2></div>
-            <div class="glass-card p-6 border-b-4 border-indigo-600"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Pico do Mês</p><h2 class="text-3xl font-black text-indigo-600" id="vPeak">---</h2></div>
+            <div class="glass-card p-6 border-b-4 border-emerald-500"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Projeção Final</p><h2 class="text-3xl font-black text-emerald-600" id="vProj">---</h2><p class="text-[8px] font-bold text-slate-400 uppercase italic">Estimativa IA</p></div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
@@ -164,15 +164,29 @@
                 document.getElementById('vVar').className = `text-[10px] font-bold mt-2 ${diff > 0 ? 'text-[#bef264]' : 'text-rose-500'}`;
             } else { document.getElementById('vVar').innerText = "N/A"; }
 
-            // Cálculo da Mediana Diária (Target)
-            const allV = [...d26v, ...d25v_full].filter(x => x > 0);
+            // Mediana e Pico
+            const allV26 = d26v.filter(x => x > 0);
+            const peak26 = allV26.length > 0 ? Math.max(...allV26) : 0;
+            document.getElementById('vPeak').innerText = peak26.toLocaleString();
+
+            // Cálculo da Mediana Diária (Target) baseada em 2025 para servir de meta
+            const allV25 = d25v_full.filter(x => x > 0);
             let medianVal = 0;
-            if(allV.length > 0) {
-                const s = [...allV].sort((a,b)=>a-b);
+            if(allV25.length > 0) {
+                const s = [...allV25].sort((a,b)=>a-b);
                 const mid = Math.floor(s.length/2);
                 medianVal = s.length % 2 !== 0 ? s[mid] : (s[mid-1]+s[mid])/2;
             }
             document.getElementById('vMed').innerText = Math.round(medianVal).toLocaleString();
+
+            // Projeção Final (Run-rate)
+            if(maxDay26 > 0 && !isFuture) {
+                const currentAvg = t26 / maxDay26;
+                const projection = Math.round(currentAvg * 30);
+                document.getElementById('vProj').innerText = projection.toLocaleString();
+            } else {
+                document.getElementById('vProj').innerText = "---";
+            }
 
             // Charts
             if(charts.l) charts.l.destroy();
