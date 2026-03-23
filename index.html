@@ -125,25 +125,54 @@
                 document.getElementById('vVar').innerText = `${diff>0?'+':''}${diff}% vs 2025`;
             } else { document.getElementById('vVar').innerText = "N/A"; }
 
-            // Mediana e Pico
+            // Cálculo da Mediana Diária (Target)
             const allV = [...d26v, ...d25v].filter(x => x > 0);
-            document.getElementById('vPeak').innerText = Math.max(...d26v, ...d25v).toLocaleString();
+            let medianVal = 0;
             if(allV.length > 0) {
-                const s = allV.sort((a,b)=>a-b);
+                const s = [...allV].sort((a,b)=>a-b);
                 const mid = Math.floor(s.length/2);
-                const med = s.length % 2 !== 0 ? s[mid] : (s[mid-1]+s[mid])/2;
-                document.getElementById('vMed').innerText = Math.round(med).toLocaleString();
+                medianVal = s.length % 2 !== 0 ? s[mid] : (s[mid-1]+s[mid])/2;
             }
+            document.getElementById('vMed').innerText = Math.round(medianVal).toLocaleString();
 
             // Charts
             if(charts.l) charts.l.destroy();
-            charts.l = new Chart(document.getElementById('mainC'), { type: 'line', data: {
-                labels: Array.from({length:31},(_,i)=>i+1),
-                datasets: [
-                    { label: '2026', data: d26v.map(v=>v>0?v:null), borderColor: '#4f46e5', borderWidth: 6, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.05)', tension: 0.4 },
-                    { label: '2025', data: d25v.map(v=>v>0?v:null), borderColor: '#cbd5e1', borderWidth: 2, fill: false, tension: 0.2 }
-                ]
-            }, options: { responsive: true, maintainAspectRatio: false }});
+            charts.l = new Chart(document.getElementById('mainC'), { 
+                type: 'line', 
+                data: {
+                    labels: Array.from({length:31},(_,i)=>i+1),
+                    datasets: [
+                        { label: 'Mediana (Meta)', data: Array(31).fill(medianVal), borderColor: '#f97316', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false },
+                        { label: '2026', data: d26v.map(v=>v>0?v:null), borderColor: '#4f46e5', borderWidth: 6, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.05)', tension: 0.4 },
+                        { label: '2025', data: d25v.map(v=>v>0?v:null), borderColor: '#cbd5e1', borderWidth: 2, fill: false, tension: 0.2 }
+                    ]
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false }, // UNIFICAR POPUP
+                    plugins: {
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            padding: 15,
+                            cornerRadius: 15,
+                            callbacks: {
+                                label: (ctx) => {
+                                    const val = ctx.raw;
+                                    if (!val) return '';
+                                    let label = ` ${ctx.dataset.label}: ${val.toLocaleString()}`;
+                                    if (ctx.dataset.label === '2026' && medianVal > 0) {
+                                        const diff = ((val - medianVal)/medianVal*100).toFixed(1);
+                                        label += ` (${diff > 0 ? '+' : ''}${diff}% vs Meta)`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
 
             if(charts.d) charts.d.destroy();
             const gs = {}; d26.forEach(x => gs[x.g] = (gs[x.g]||0)+x.t);
