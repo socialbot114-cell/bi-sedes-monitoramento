@@ -172,27 +172,66 @@
 
             document.getElementById('v26').innerText = t26.toLocaleString();
             document.getElementById('v25').innerText = t25.toLocaleString();
-            document.getElementById('vPeak').innerText = Math.max(...d26.v, ...d25.v).toLocaleString();
+            // Mediana e Pico
+            const allV26 = d26.v.filter(x => x > 0);
+            const peak26 = allV26.length > 0 ? Math.max(...allV26) : 0;
+            document.getElementById('vPeak').innerText = peak26.toLocaleString();
 
-            const t25Comp = d25.v.slice(0, maxD26 || 31).reduce((a,b)=>a+b, 0);
-            if(t25Comp > 0 && t26 > 0) {
-                const diff = ((t26-t25Comp)/t25Comp*100).toFixed(1);
-                document.getElementById('vVar').innerText = `${diff>0?'+':''}${diff}% vs 2025 (P)`;
+            // Cálculo da Mediana Diária baseada em 2025 (Meta)
+            const allV25 = d25.v.filter(x => x > 0);
+            let medianVal = 0;
+            if(allV25.length > 0) {
+                const s = [...allV25].sort((a,b)=>a-b);
+                const mid = Math.floor(s.length/2);
+                medianVal = s.length % 2 !== 0 ? s[mid] : (s[mid-1]+s[mid])/2;
+            }
+            const minLei = medianVal * 0.8;
+            document.getElementById('vMed').innerText = Math.round(medianVal || 0).toLocaleString();
+
+            if(maxDay26 > 0 && !isFuture) {
+                document.getElementById('vProj').innerText = Math.round((t26/maxDay26)*22).toLocaleString();
             }
 
-            const medianVal = getM([...d26.v, ...d25.v].filter(x=>x>0));
-            document.getElementById('vMed').innerText = Math.round(medianVal || 0).toLocaleString();
-            document.getElementById('vProj').innerText = maxD26 > 0 ? Math.round((t26/maxD26)*22).toLocaleString() : "---";
-
+            // Charts
             if(charts.l) charts.l.destroy();
-            charts.l = new Chart(document.getElementById('mainC'), { type: 'line', data: {
-                labels: Array.from({length:31},(_,i)=>i+1),
-                datasets: [
-                    { label: 'Mediana', data: Array(31).fill(medianVal), borderColor: '#f97316', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false },
-                    { label: '2026', data: d26.v.map((v,i)=>d26.c[i]?v:null), borderColor: '#4f46e5', borderWidth: 6, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.05)', tension: 0.4 },
-                    { label: '2025', data: d25.v.map((v,i)=>d25.c[i]?v:null), borderColor: '#cbd5e1', borderWidth: 2, fill: false, tension: 0.2 }
-                ]
-            }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false } }});
+            charts.l = new Chart(document.getElementById('mainC'), { 
+                type: 'line', 
+                data: {
+                    labels: Array.from({length:31},(_,i)=>i+1),
+                    datasets: [
+                        { label: 'Mediana (Meta)', data: Array(31).fill(medianVal), borderColor: '#f97316', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false },
+                        { label: 'Mínimo por Lei', data: Array(31).fill(minLei), borderColor: '#ef4444', borderWidth: 2, pointRadius: 0, fill: false },
+                        { label: '2026', data: d26.v.map((v,i)=>d26.c[i]?v:null), borderColor: '#4f46e5', borderWidth: 6, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.05)', tension: 0.4 },
+                        { label: '2025', data: d25.v.map((v,i)=>d25.c[i]?v:null), borderColor: '#cbd5e1', borderWidth: 2, fill: false, tension: 0.2 }
+                    ]
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            padding: 20,
+                            cornerRadius: 20,
+                            callbacks: {
+                                label: (ctx) => {
+                                    const val = ctx.raw;
+                                    if (!val) return '';
+                                    let label = ` ${ctx.dataset.label}: ${val.toLocaleString()}`;
+                                    if (ctx.dataset.label === '2026' && medianVal > 0) {
+                                        const percMeta = ((val / medianVal) * 100).toFixed(1);
+                                        label += ` | ${percMeta}% da Meta`;
+                                        if (val < minLei) label += ' ⚠️ ABAIXO DO MÍNIMO';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
 
             if(charts.d) charts.d.destroy();
             const gs = {}; biData.filter(d => (d.y===(t26>0?2026:2025)) && d.m===m).forEach(x => gs[x.g] = (gs[x.g]||0)+x.t);
