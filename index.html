@@ -24,35 +24,43 @@
     <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-slate-200/50 p-6 shadow-sm">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
-                <span class="bg-indigo-100 text-indigo-600 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-2 inline-block italic">SEDES Intelligence v9.5</span>
+                <span class="bg-indigo-100 text-indigo-600 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-2 inline-block italic">SEDES Intelligence v11.0</span>
                 <h1 class="text-2xl md:text-3xl font-black tracking-tighter text-slate-900 italic uppercase">Dashboard Estratégico <span class="text-indigo-600 underline decoration-indigo-200">SEDES GDF</span></h1>
             </div>
-            <div id="statusAlert" class="hidden bg-orange-500 text-white px-6 py-2 rounded-2xl text-xs font-black animate-pulse">⚠️ MODO HISTÓRICO ATIVO</div>
-            <div class="flex items-center gap-3 bg-slate-100/50 p-2 rounded-3xl border border-slate-200/50">
-                <select id="monthSelector" class="bg-transparent font-bold text-sm px-4 outline-none cursor-pointer text-slate-600">
-                    <option value="1">Janeiro</option><option value="2">Fevereiro</option>
-                    <option value="3" selected>Março (Atual)</option><option value="4">Abril</option>
-                    <option value="5">Maio</option><option value="6">Junho</option>
-                    <option value="7">Julho</option><option value="8">Agosto</option>
-                    <option value="9">Setembro</option><option value="10">Outubro</option>
-                    <option value="11">Novembro</option><option value="12">Dezembro</option>
-                </select>
-                <div class="h-6 w-px bg-slate-300"></div>
-                <select id="groupSelector" class="bg-transparent font-bold text-sm px-4 outline-none cursor-pointer text-indigo-600">
-                    <option value="ALL">TODOS OS GRUPOS</option>
-                    <option value="CRAS / CREAS / CENTRO POP">CRAS / CREAS / POP</option>
-                    <option value="UNIDADE ACOLHIMENTO">ACOLHIMENTO</option>
-                    <option value="OSC & POSTO">OSC & POSTO</option>
-                    <option value="CECON / CONVIVÊNCIA">CECON</option>
-                    <option value="OUTROS / GESTÃO">GESTÃO</option>
-                </select>
-            </div>
+            <div id="statusAlert" class="hidden bg-orange-500 text-white px-6 py-2 rounded-2xl text-xs font-black animate-pulse shadow-lg">⚠️ MODO HISTÓRICO ATIVO</div>
         </div>
     </header>
 
-    <main class="container mx-auto px-6 mt-8">
+    <main class="container mx-auto px-6 mt-12">
 
+        <!-- ================= VIEW MENSAL ================= -->
         <div id="viewMensal" class="space-y-12">
+            
+            <div class="glass-card p-6 border-l-8 border-indigo-600 flex flex-wrap items-center gap-6 shadow-xl">
+                <div class="flex flex-col gap-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mês de Análise</label>
+                    <select id="monthSelectorM" class="bg-slate-100 font-bold text-sm px-6 py-3 rounded-2xl border-none outline-none cursor-pointer text-slate-700 hover:bg-slate-200 transition-colors">
+                        <option value="1">Janeiro</option><option value="2">Fevereiro</option>
+                        <option value="3" selected>Março (Atual)</option><option value="4">Abril</option>
+                        <option value="5">Maio</option><option value="6">Junho</option>
+                        <option value="7">Julho</option><option value="8">Agosto</option>
+                        <option value="9">Setembro</option><option value="10">Outubro</option>
+                        <option value="11">Novembro</option><option value="12">Dezembro</option>
+                    </select>
+                </div>
+                <div class="h-12 w-px bg-slate-200 mx-2"></div>
+                <div class="flex flex-col gap-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Filtro de Grupo</label>
+                    <select id="groupSelectorM" class="bg-indigo-50 font-bold text-sm px-6 py-3 rounded-2xl border-none outline-none cursor-pointer text-indigo-700 hover:bg-indigo-100 transition-colors">
+                        <option value="ALL">TODOS OS GRUPOS</option>
+                        <option value="CRAS / CREAS / CENTRO POP">A: CRAS & CREAS & POP</option>
+                        <option value="UNIDADE ACOLHIMENTO">B: UNIDADE ACOLHIMENTO</option>
+                        <option value="OSC & POSTO">C: OSC & POSTO</option>
+                        <option value="CECON / CONVIVÊNCIA">D: CECON</option>
+                    </select>
+                </div>
+            </div>
+
             <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] ml-2 italic">Performance Diária do Mês</p>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div class="glass-card p-6 bg-slate-900 text-white shadow-2xl">
@@ -156,8 +164,8 @@
         }
 
         function updateDashboard() {
-            const m = parseInt(document.getElementById('monthSelector').value);
-            const g = document.getElementById('groupSelector').value;
+            const m = parseInt(document.getElementById('monthSelectorM').value);
+            const g = document.getElementById('groupSelectorM').value;
 
             const daysWithData26 = biData.filter(d => d.y === 2026 && d.m === m && d.t > 0).map(d => d.d);
             const maxDay26 = daysWithData26.length > 0 ? Math.max(...daysWithData26) : 0;
