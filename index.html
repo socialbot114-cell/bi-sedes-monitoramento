@@ -79,16 +79,50 @@
                 <div id="uGrid" class="space-y-4"></div>
             </div>
         </div>
+
+        <!-- DICIONÁRIO DE TAXONOMIA RESTAURADO -->
+        <div class="glass-card p-10 border-t-8 border-slate-900 mt-20">
+            <h3 class="text-xl font-black text-slate-800 mb-6 uppercase italic tracking-widest">Dicionário de Taxonomia da Rede</h3>
+            <div id="taxonomyDictionary" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6"></div>
+        </div>
     </main>
+
+    <!-- FOOTER INSTITUCIONAL RESTAURADO -->
+    <footer class="bg-slate-900 text-white py-16 mt-20 border-t-4 border-indigo-600">
+        <div class="container mx-auto px-8 text-center md:text-left grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div class="space-y-4">
+                <h4 class="text-xl font-black text-indigo-400 italic uppercase tracking-tighter">SEDES GDF</h4>
+                <p class="text-[10px] text-slate-500 uppercase leading-loose tracking-widest">Secretaria de Estado de Desenvolvimento Social <br>Asa Norte, Brasília-DF</p>
+            </div>
+            <div class="space-y-4">
+                <h5 class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Contato Oficiais</h5>
+                <p class="text-sm font-bold text-slate-300">Ouvidoria: 162 | Social: (61) 3773-7248</p>
+            </div>
+            <div class="space-y-4">
+                <h5 class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Tecnologia</h5>
+                <p class="text-[9px] font-black text-indigo-500 uppercase italic">Power by Orquestrador Antigravity</p>
+            </div>
+        </div>
+    </footer>
 
     <script>
         let biData; let biDetails; let charts = {};
         const G_COLORS = {"CRAS / CREAS / CENTRO POP": "#4f46e5","UNIDADE ACOLHIMENTO": "#a855f7","OSC & POSTO": "#f59e0b","CECON / GESTÃO": "#64748b"};
 
         async function start() {
-            const [dRes, detRes] = await Promise.all([fetch('./data/bi_data_v4.json'), fetch('./data/bi_details_v4.json')]);
+            const [dRes, detRes] = await Promise.all([fetch('./data/bi_data_v4.json'), fetch('./data/bi_details_v4.json'), fetch('./data/unit_mapping_v4.json')]);
             biData = await dRes.json();
             biDetails = await detRes.json();
+            unitMapping = await (await fetch('./data/unit_mapping_v4.json')).json();
+            
+            // Popular Dicionário
+            const dictContainer = document.getElementById('taxonomyDictionary');
+            dictContainer.innerHTML = Object.entries(unitMapping).map(([group, units]) => `
+                <div class="bg-slate-50 p-4 rounded-3xl border border-slate-100">
+                    <p class="text-[9px] font-black mb-3 px-2 py-1 rounded-full text-center uppercase tracking-tighter" style="background:${G_COLORS[group]}15; color:${G_COLORS[group]}">${group}</p>
+                    <div class="max-h-32 overflow-y-auto pr-2 custom-scrollbar space-y-1">${units.map(u => `<p class="text-[8px] font-bold text-slate-500 uppercase leading-tight">${u}</p>`).join('')}</div>
+                </div>`).join('');
+
             document.getElementById('mSel').onchange = render;
             document.getElementById('gSel').onchange = render;
             render();
@@ -102,27 +136,32 @@
             const d26 = filtered.filter(d => d.y===2026 && d.m===m);
             const d25 = filtered.filter(d => d.y===2025 && d.m===m);
 
-            // CORREÇÃO: Soma acumulativa por dia (Impede sobreposição na Rede Completa)
-            const getDV = (data) => {
+            // Identificar o último dia com dados em 2026 para comparação proporcional
+            const daysWithData26 = d26.filter(x => x.t > 0).map(x => x.d);
+            const maxDay26 = daysWithData26.length > 0 ? Math.max(...daysWithData26) : 31;
+            const isFuture = daysWithData26.length === 0;
+
+            const getDV = (data, limit = 31) => {
                 const r = Array(31).fill(0);
-                data.forEach(x => { r[x.d-1] += x.t; }); // USANDO += PARA SOMAR GRUPOS
+                data.forEach(x => { if(x.d <= limit) r[x.d-1] += x.t; });
                 return r;
             };
 
-            const d26v = getDV(d26); const d25v = getDV(d25);
-            const t26 = d26v.reduce((a,b)=>a+b, 0);
-            const t25 = d25v.reduce((a,b)=>a+b, 0);
+            const d26v = getDV(d26); 
+            const d25v_full = getDV(d25); // Dados completos para o gráfico
+            const d25v_comp = getDV(d25, maxDay26); // Dados cortados para o KPI
 
-            const isFuture = t26 === 0;
-            document.getElementById('statusTag').innerText = isFuture ? "MODO PLANEJAMENTO" : "MODO REAL-TIME";
-            document.getElementById('statusTag').className = isFuture ? "bg-orange-500 text-white px-4 py-1 rounded-full text-[10px] font-bold" : "bg-indigo-600 text-white px-4 py-1 rounded-full text-[10px] font-bold animate-pulse";
+            const t26 = d26v.reduce((a,b)=>a+b, 0);
+            const t25_comp = d25v_comp.reduce((a,b)=>a+b, 0);
 
             document.getElementById('v26').innerText = t26.toLocaleString();
-            document.getElementById('v25').innerText = t25.toLocaleString();
+            document.getElementById('v25').innerText = t25_comp.toLocaleString();
+            document.getElementById('v25').title = `Volume proporcional até o dia ${maxDay26}`;
 
-            if(t25 > 0 && !isFuture) {
-                const diff = ((t26-t25)/t25*100).toFixed(1);
-                document.getElementById('vVar').innerText = `${diff>0?'+':''}${diff}% vs 2025`;
+            if(t25_comp > 0 && !isFuture) {
+                const diff = ((t26-t25_comp)/t25_comp*100).toFixed(1);
+                document.getElementById('vVar').innerText = `${diff>0?'+':''}${diff}% vs 2025 (P)`;
+                document.getElementById('vVar').className = `text-[10px] font-bold mt-2 ${diff > 0 ? 'text-[#bef264]' : 'text-rose-500'}`;
             } else { document.getElementById('vVar').innerText = "N/A"; }
 
             // Cálculo da Mediana Diária (Target)
@@ -144,7 +183,7 @@
                     datasets: [
                         { label: 'Mediana (Meta)', data: Array(31).fill(medianVal), borderColor: '#f97316', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false },
                         { label: '2026', data: d26v.map(v=>v>0?v:null), borderColor: '#4f46e5', borderWidth: 6, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.05)', tension: 0.4 },
-                        { label: '2025', data: d25v.map(v=>v>0?v:null), borderColor: '#cbd5e1', borderWidth: 2, fill: false, tension: 0.2 }
+                        { label: '2025', data: d25v_full.map(v=>v>0?v:null), borderColor: '#cbd5e1', borderWidth: 2, fill: false, tension: 0.2 }
                     ]
                 }, 
                 options: { 
