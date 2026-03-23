@@ -3,152 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BI Estratégico SEDES GDF</title>
+    <title>Enterprise Analytics - SEDES GDF</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; }
-        .glass-card { background: white; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border-radius: 1.5rem; }
-        .view-switcher { background: #0f172a; padding: 0.5rem; border-radius: 2.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .glass-card { background: white; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border-radius: 1.5rem; transition: all 0.3s; }
+        .view-switcher { background: #0f172a; padding: 0.4rem; border-radius: 2rem; }
         .active-view-btn { background: #bef264; color: #0f172a; font-weight: 800; }
         .hidden-view { display: none !important; }
-        #map { height: 500px; width: 100%; border-radius: 1.5rem; border: 2px solid white; }
-        canvas { max-width: 100% !important; }
+        #map { height: 500px; width: 100%; border-radius: 1.5rem; }
+        .legend-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
     </style>
 </head>
-<body class="text-slate-900 pb-40">
+<body class="text-slate-900 pb-32">
 
     <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200 p-6">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-black tracking-tighter italic uppercase text-slate-800">SEDES <span class="text-indigo-600">GDF Intelligence</span></h1>
-            <div id="statusAlert" class="hidden bg-orange-500 text-white px-6 py-2 rounded-2xl text-xs font-black animate-pulse">PLANEJAMENTO ATIVO</div>
+            <h1 class="text-2xl font-black italic uppercase">SEDES <span class="text-indigo-600">GDF Analytics</span></h1>
+            <div class="bg-emerald-500 text-white px-4 py-1 rounded-full text-[10px] font-bold animate-pulse">DADOS ATUALIZADOS: 23/03/2026</div>
         </div>
     </header>
 
     <main class="container mx-auto px-6 mt-12">
-        <div id="loading" class="text-center py-20"><h2 class="text-xl font-bold animate-bounce">CARREGANDO INTELIGÊNCIA...</h2></div>
-
-        <div id="dashboardContent" class="hidden">
-            <!-- ================= VIEW MENSAL ================= -->
-            <div id="viewMensal" class="space-y-12">
-                <div class="glass-card p-6 border-l-8 border-indigo-600 flex flex-wrap items-center gap-6 shadow-xl">
-                    <select id="monthSelectorM" class="bg-slate-100 font-bold text-sm px-6 py-3 rounded-xl border-none outline-none text-slate-600 cursor-pointer">
+        <div id="viewMensal" class="space-y-12">
+            <!-- Filtros -->
+            <div class="glass-card p-6 flex flex-wrap items-center gap-6 shadow-xl border-l-8 border-indigo-600">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase">Mês</label>
+                    <select id="monthSelect" class="bg-slate-50 font-bold text-sm px-4 py-2 rounded-xl outline-none border-none">
                         <option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3" selected>Março</option>
-                        <option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option>
                     </select>
-                    <select id="groupSelectorM" class="bg-indigo-50 font-bold text-sm px-6 py-3 rounded-xl border-none outline-none text-indigo-600 cursor-pointer">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase">Grupo Estratégico</label>
+                    <select id="groupSelect" class="bg-indigo-50 font-bold text-sm px-4 py-2 rounded-xl outline-none border-none text-indigo-700">
                         <option value="ALL">REDE COMPLETA</option>
                         <option value="CRAS / CREAS / CENTRO POP">A: CRAS & CREAS</option>
                         <option value="UNIDADE ACOLHIMENTO">B: ACOLHIMENTO</option>
                         <option value="OSC & POSTO">C: OSC & POSTO</option>
                     </select>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="glass-card p-6 bg-slate-900 text-white"><p class="text-[10px] text-slate-500 uppercase mb-1">Volume 2026</p><h2 class="text-4xl font-black text-[#bef264]" id="m-2026">---</h2><div id="m-var" class="text-[10px] font-bold mt-2">---</div></div>
-                    <div class="glass-card p-6"><p class="text-[10px] text-slate-400 uppercase mb-1">Volume 2025</p><h2 class="text-3xl font-black" id="m-2025">---</h2></div>
-                    <div class="glass-card p-6"><p class="text-[10px] text-slate-400 uppercase mb-1">Mediana Diária</p><h2 class="text-3xl font-black text-orange-500" id="m-median">---</h2></div>
-                    <div class="glass-card p-6 border-b-4 border-indigo-500"><p class="text-[10px] text-slate-400 uppercase mb-1">Capacidade</p><h2 class="text-3xl font-black text-indigo-600" id="m-avg">---</h2></div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    <div class="glass-card lg:col-span-8 p-8"><h3 class="text-xs font-black text-slate-400 uppercase mb-8">Evolução Diária</h3><div class="h-[400px]"><canvas id="chartLineM"></canvas></div></div>
-                    <div class="lg:col-span-4 glass-card p-8"><h3 class="text-xs font-black text-slate-400 uppercase mb-8">Distribuição Grupo</h3><div class="h-[300px] flex items-center justify-center"><canvas id="chartDonutM"></canvas></div></div>
-                </div>
             </div>
 
-            <!-- ================= VIEW ANUAL ================= -->
-            <div id="viewAnual" class="hidden-view space-y-12">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="glass-card p-6 border-l-8 border-slate-500"><p class="text-[10px] font-black uppercase mb-1 text-slate-400">Total 2025</p><h2 class="text-4xl font-black">864.676</h2></div>
-                    <div class="glass-card p-6 border-l-8 border-indigo-600 bg-indigo-50"><p class="text-[10px] font-black uppercase mb-1 text-indigo-400">Acumulado 2026</p><h2 class="text-4xl font-black text-indigo-600" id="ann-total-26">165.846</h2></div>
-                    <div class="glass-card p-6 bg-slate-900 text-white"><p class="text-[10px] font-black uppercase mb-1 text-slate-500">Var YTD Global</p><h2 class="text-4xl font-black text-[#bef264]" id="ytd-var">---</h2></div>
-                </div>
-                <div class="glass-card p-10"><h3 class="text-lg font-black text-slate-800 mb-8 uppercase text-center">Inteligência Geográfica</h3><div id="map"></div></div>
+            <!-- KPIs -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
+                <div class="glass-card p-6 bg-slate-900 text-white"><p class="text-[9px] font-black text-slate-500 uppercase mb-1">Volume 2026</p><h2 class="text-4xl font-black text-[#bef264]" id="kpi-26">---</h2><div id="kpi-var" class="text-[10px] font-bold mt-2">---</div></div>
+                <div class="glass-card p-6"><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Volume 2025</p><h2 class="text-3xl font-black text-slate-700" id="kpi-25">---</h2></div>
+                <div class="glass-card p-6"><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Mediana Diária</p><h2 class="text-3xl font-black text-orange-500" id="kpi-med">---</h2></div>
+                <div class="glass-card p-6 border-b-4 border-indigo-600"><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Capacidade</p><h2 class="text-3xl font-black text-indigo-600" id="kpi-cap">---</h2></div>
             </div>
+
+            <!-- Gráficos e Perfil Servidor -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="glass-card lg:col-span-8 p-8"><h3 class="text-xs font-black text-slate-400 uppercase mb-6">Tendência Diária</h3><canvas id="mainChart" height="400"></canvas></div>
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="glass-card p-8">
+                        <h3 class="text-xs font-black text-slate-400 uppercase mb-6">Distribuição de Esforço</h3>
+                        <div class="h-[250px]"><canvas id="donutChart"></canvas></div>
+                    </div>
+                    <div class="glass-card p-8 bg-slate-50 border-dashed border-2">
+                        <h3 class="text-xs font-black text-slate-500 uppercase mb-6">Top Perfis de Servidores</h3>
+                        <div id="profileGrid" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VIEW ANUAL ================= -->
+        <div id="viewAnual" class="hidden-view space-y-12">
+            <div id="map" class="glass-card"></div>
         </div>
     </main>
 
     <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] view-switcher p-2 flex gap-2">
-        <button onclick="switchView('mensal')" id="btnMensal" class="px-10 py-3 rounded-full text-[10px] font-black uppercase active-view-btn">MENSAL</button>
-        <button onclick="switchView('anual')" id="btnAnual" class="px-10 py-3 rounded-full text-[10px] font-black uppercase text-white/40">ANUAL</button>
+        <button onclick="switchView('mensal')" id="btnM" class="px-10 py-3 rounded-full text-[10px] font-black uppercase active-view-btn">MENSAL</button>
+        <button onclick="switchView('anual')" id="btnA" class="px-10 py-3 rounded-full text-[10px] font-black uppercase text-white/40">ANUAL</button>
     </div>
 
     <script>
-        let biData; let map; let charts = {};
+        let biData; let charts = {};
         const GROUP_COLORS = {"CRAS / CREAS / CENTRO POP": "#4f46e5","UNIDADE ACOLHIMENTO": "#a855f7","OSC & POSTO": "#f59e0b","CECON / GESTÃO": "#64748b"};
-        const RA_COORDS = {"CEILANDIA": [-15.8202, -48.1130], "GAMA": [-16.0181, -48.0675], "TAGUATINGA": [-15.8333, -48.0500], "SAMAMBAIA": [-15.8814, -48.0875], "PLANALTINA": [-15.6175, -47.6531], "PARANOA": [-15.7725, -47.7789], "SAO SEBASTIAO": [-15.9103, -47.7753], "BRASILIA": [-15.7942, -47.8822], "GUARA": [-15.8239, -47.9781], "RECANTO DAS EMAS": [-15.9011, -48.0672], "SANTA MARIA": [-16.0203, -47.9856], "SOBRADINHO": [-15.6531, -47.7886]};
 
         async function start() {
-            try {
-                const res = await fetch('./data/bi_data_v4.json');
-                biData = await res.json();
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('dashboardContent').classList.remove('hidden');
-                
-                document.getElementById('monthSelectorM').onchange = render;
-                document.getElementById('groupSelectorM').onchange = render;
-                
-                render();
-            } catch (e) { document.getElementById('loading').innerText = "ERRO AO CARREGAR DADOS"; }
-        }
-
-        function switchView(view) {
-            document.getElementById('viewMensal').classList.toggle('hidden-view', view !== 'mensal');
-            document.getElementById('viewAnual').classList.toggle('hidden-view', view !== 'anual');
-            document.getElementById('btnMensal').className = view === 'mensal' ? 'px-10 py-3 rounded-full text-[10px] font-black active-view-btn' : 'px-10 py-3 rounded-full text-[10px] font-black text-white/40';
-            document.getElementById('btnAnual').className = view === 'anual' ? 'px-10 py-3 rounded-full text-[10px] font-black active-view-btn' : 'px-10 py-3 rounded-full text-[10px] font-black text-white/40';
-            if (view === 'anual') { if(!map) initMap(); setTimeout(()=>map.invalidateSize(), 200); }
+            const res = await fetch('./data/bi_data_v4.json');
+            biData = await res.json();
+            document.getElementById('monthSelect').onchange = render;
+            document.getElementById('groupSelect').onchange = render;
             render();
         }
 
-        function initMap() {
-            map = L.map('map').setView([-15.7942, -47.8822], 10);
-            L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
+        function switchView(v) {
+            document.getElementById('viewMensal').classList.toggle('hidden-view', v!=='mensal');
+            document.getElementById('viewAnual').classList.toggle('hidden-view', v!=='anual');
+            document.getElementById('btnM').className = v==='mensal' ? 'px-10 py-3 rounded-full text-[10px] font-black active-view-btn' : 'px-10 py-3 rounded-full text-[10px] font-black text-white/40';
+            document.getElementById('btnA').className = v==='anual' ? 'px-10 py-3 rounded-full text-[10px] font-black active-view-btn' : 'px-10 py-3 rounded-full text-[10px] font-black text-white/40';
+            render();
         }
 
         function render() {
-            const m = parseInt(document.getElementById('monthSelectorM').value);
-            const g = document.getElementById('groupSelectorM').value;
-            const isAnual = !document.getElementById('viewAnual').classList.contains('hidden-view');
+            const m = parseInt(document.getElementById('monthSelect').value);
+            const g = document.getElementById('groupSelect').value;
+            const filtered = biData.filter(d => (g==='ALL' || d.g === g));
 
-            const filtered = biData.filter(d => (g === 'ALL' || d.g === g));
-            const t26 = filtered.filter(d => d.y === 2026 && d.m === m).reduce((a,c)=>a+c.t, 0);
-            const t25 = filtered.filter(d => d.y === 2025 && d.m === m).reduce((a,c)=>a+c.t, 0);
+            const t26 = filtered.filter(d => d.y===2026 && d.m===m).reduce((a,c)=>a+c.t,0);
+            const t25 = filtered.filter(d => d.y===2025 && d.m===m).reduce((a,c)=>a+c.t,0);
+            
+            document.getElementById('kpi-26').innerText = t26.toLocaleString();
+            document.getElementById('kpi-25').innerText = t25.toLocaleString();
 
-            document.getElementById('m-2026').innerText = t26.toLocaleString();
-            document.getElementById('m-2025').innerText = t25.toLocaleString();
-
-            const days26 = filtered.filter(d => d.y === 2026 && d.m === m && d.t > 0).map(d => d.d);
-            const maxD = days26.length > 0 ? Math.max(...days26) : 0;
-            const t25Comp = filtered.filter(d => d.y === 2025 && d.m === m && d.d <= maxD).reduce((a,c)=>a+c.t, 0);
-
-            if(t25Comp > 0) {
+            const days26 = filtered.filter(d => d.y===2026 && d.m===m && d.t>0).map(d=>d.d);
+            const maxD = days26.length>0 ? Math.max(...days26) : 0;
+            const t25Comp = filtered.filter(d => d.y===2025 && d.m===m && d.d<=maxD).reduce((a,c)=>a+c.t,0);
+            if(t25Comp>0) {
                 const diff = ((t26-t25Comp)/t25Comp*100).toFixed(1);
-                document.getElementById('m-var').innerText = `${diff>0?'↑':''} ${diff}% vs 2025`;
-                document.getElementById('m-var').style.color = diff > 0 ? '#bef264' : '#fb7185';
+                document.getElementById('kpi-var').innerText = `${diff>0?'↑':''} ${diff}% vs 2025`;
+                document.getElementById('kpi-var').style.color = diff>0?'#bef264':'#fb7185';
             }
 
-            // Charts stability
-            if(charts.line) charts.line.destroy();
-            const getD = (y) => { const r = Array(31).fill(0); filtered.filter(d => d.y === y && d.m === m).forEach(d => r[d.d-1]=d.t); return r.map(v=>v>0?v:null); };
-            charts.line = new Chart(document.getElementById('chartLineM'), { type: 'line', data: { labels: Array.from({length:31},(_,i)=>i+1), datasets: [
+            // Gráfico Principal
+            if(charts.main) charts.main.destroy();
+            const getD = (y) => { const r = Array(31).fill(0); filtered.filter(d => d.y===y && d.m===m).forEach(d => r[d.d-1]=d.t); return r.map(v=>v>0?v:null); };
+            charts.main = new Chart(document.getElementById('mainChart'), { type: 'line', data: { labels: Array.from({length:31},(_,i)=>i+1), datasets: [
                 { label: '2026', data: getD(2026), borderColor: '#4f46e5', borderWidth: 4, tension: 0.4, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.05)' },
                 { label: '2025', data: getD(2025), borderColor: '#cbd5e1', borderWidth: 2, fill: false }
             ]}, options: { responsive: true, maintainAspectRatio: false }});
 
+            // Donut
             if(charts.donut) charts.donut.destroy();
-            const gs = {}; filtered.filter(d => d.y === 2026 && d.m === m).forEach(d => gs[d.g] = (gs[d.g]||0)+d.t);
-            charts.donut = new Chart(document.getElementById('chartDonutM'), { type: 'doughnut', data: { labels: Object.keys(gs), datasets: [{ data: Object.values(gs), backgroundColor: Object.keys(gs).map(l=>GROUP_COLORS[l]) }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }});
+            const gs = {}; filtered.filter(d => d.y===2026 && d.m===m).forEach(d => gs[d.g] = (gs[d.g]||0)+d.t);
+            charts.donut = new Chart(document.getElementById('donutChart'), { type: 'pie', data: { labels: Object.keys(gs), datasets: [{ data: Object.values(gs), backgroundColor: Object.keys(gs).map(l=>GROUP_COLORS[l]) }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom' } } }});
 
-            if(isAnual && map) {
-                map.eachLayer(l => { if(l instanceof L.CircleMarker) map.removeLayer(l); });
-                const raS = {}; filtered.filter(d => d.y === 2026).forEach(d => { d.u.forEach(u => { for(let ra in RA_COORDS) { if(u.n.includes(ra)) { raS[ra] = (raS[ra]||0)+u.t; break; } } }); });
-                Object.entries(raS).forEach(([ra, t]) => L.circleMarker(RA_COORDS[ra], { radius: Math.sqrt(t)*0.4, fillColor: "#4f46e5", color: "#fff", weight: 2, fillOpacity: 0.7 }).addTo(map));
-            }
+            // Perfis de Servidor
+            const ps = {}; filtered.filter(d => d.y===2026 && d.m===m).forEach(d => d.u.forEach(u => Object.entries(u.p).forEach(([k,v]) => ps[k]=(ps[k]||0)+v)));
+            const sortedP = Object.entries(ps).sort((a,b)=>b[1]-a[1]).slice(0,5);
+            document.getElementById('profileGrid').innerHTML = sortedP.map(([k,v]) => `<div class="flex justify-between items-center text-[10px] font-bold"><p class="text-slate-500 uppercase truncate w-40">${k}</p><p class="text-slate-800">${v.toLocaleString()}</p></div>`).join('');
         }
         window.onload = start;
     </script>
