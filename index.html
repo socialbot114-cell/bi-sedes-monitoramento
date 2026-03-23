@@ -165,7 +165,7 @@
             } else { document.getElementById('vVar').innerText = "N/A"; }
 
             // Cálculo da Mediana Diária (Target)
-            const allV = [...d26v, ...d25v].filter(x => x > 0);
+            const allV = [...d26v, ...d25v_full].filter(x => x > 0);
             let medianVal = 0;
             if(allV.length > 0) {
                 const s = [...allV].sort((a,b)=>a-b);

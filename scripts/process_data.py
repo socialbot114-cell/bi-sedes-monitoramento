@@ -83,7 +83,18 @@ def process_data():
         with open(os.path.join(OUTPUT_DIR, "bi_details_v4.json"), "w") as f:
             json.dump(details_tree, f)
 
-        print(f"Sucesso! Volumes Anuais: {dict(annual_totals)}")
+        # GERAR MAPEAMENTO V4 CORRETAMENTE
+        unit_map = defaultdict(set)
+        for y, meses in details_tree.items():
+            for m, grupos in meses.items():
+                for gp, val in grupos.items():
+                    for unit in val["units"].keys():
+                        unit_map[gp].add(unit)
+
+        with open(os.path.join(OUTPUT_DIR, "unit_mapping_v4.json"), "w") as f:
+            json.dump({gp: sorted(list(u)) for gp, u in unit_map.items()}, f)
+
+        print(f"Sucesso! Gerados v4: bi_data, bi_details e unit_mapping.")
 
     except Exception as e:
         print(f"Erro: {e}")
