@@ -8,23 +8,23 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .glass-card { background: white; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border-radius: 1.5rem; transition: all 0.2s; }
-        .chart-container { position: relative; height: 400px; width: 100%; }
+        .glass-card { background: white; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border-radius: 1.5rem; transition: all 0.2s; }
+        .chart-container { position: relative; height: 350px; width: 100%; }
         #map { height: 500px; width: 100%; border-radius: 1.5rem; }
         .hidden-view { display: none !important; }
-        .active-btn { background: #4f46e5; color: white; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); }
+        .active-btn { background: #4f46e5; color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
 </head>
-<body class="text-slate-900 pb-32">
+<body class="text-slate-900 pb-20">
 
     <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-slate-200 p-6">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-black italic uppercase">SEDES <span class="text-indigo-600">GDF Analytics</span></h1>
+            <h1 class="text-xl font-black italic uppercase">Portal <span class="text-indigo-600">SEDES GDF</span> Analytics</h1>
             <div id="statusTag" class="bg-indigo-600 text-white px-4 py-1 rounded-full text-[10px] font-bold animate-pulse">MODO REAL-TIME</div>
         </div>
     </header>
@@ -54,10 +54,13 @@
                 <div class="glass-card p-6 border-l-4 border-indigo-500"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Pico do Mês</p><h2 class="text-3xl font-black text-slate-800" id="vPeak">---</h2></div>
                 <div class="glass-card p-6 border-l-4 border-slate-300"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1 text-slate-400">Média Semanal</p><h2 class="text-3xl font-black text-slate-700" id="vWeek">---</h2></div>
                 <div class="glass-card p-6 border-l-4 border-blue-400"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1 text-blue-400">Share da Rede %</p><h2 class="text-3xl font-black text-blue-600" id="vShare">---</h2></div>
-                <div class="glass-card p-6 bg-slate-50"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Status da Rede</p><h2 class="text-2xl font-black text-slate-600">OPERACIONAL</h2></div>
+                <div class="glass-card p-6 bg-slate-50"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1 text-slate-400 italic">Total Anual 2025</p><h2 class="text-xl font-black text-slate-600">864.676</h2></div>
             </div>
 
-            <div class="glass-card p-10 flex flex-col"><h3 class="text-xs font-black text-slate-400 uppercase mb-10 italic">Tendência Diária e Mediana (YoY)</h3><div class="chart-container"><canvas id="mainC"></canvas></div></div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+                <div class="glass-card lg:col-span-8 p-10 flex flex-col"><h3 class="text-xs font-black text-slate-400 uppercase mb-10 tracking-[0.2em] italic">Tendência Diária e Mediana (YoY)</h3><div class="chart-container"><canvas id="mainC"></canvas></div></div>
+                <div class="lg:col-span-4 glass-card p-10 flex flex-col justify-center"><h3 class="text-xs font-black text-slate-400 uppercase mb-8 text-center italic">Esforço por Grupo</h3><div class="chart-container" style="height:300px;"><canvas id="donutC"></canvas></div></div>
+            </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="glass-card p-10"><h3 class="text-xs font-black text-slate-400 uppercase mb-8 italic">Distribuição de Força de Trabalho</h3><div id="pGrid" class="space-y-4"></div></div>
@@ -68,7 +71,7 @@
         <div id="viewAnual" class="hidden-view space-y-12"><div id="map" class="glass-card"></div></div>
 
         <div class="glass-card p-12 border-t-8 border-slate-900 mt-20">
-            <h3 class="text-xl font-black text-slate-800 mb-10 uppercase italic tracking-widest">Dicionário de Taxonomia da Rede</h3>
+            <h3 class="text-xl font-black text-slate-800 mb-10 uppercase italic">Dicionário de Taxonomia da Rede</h3>
             <div id="taxonomyDictionary" class="grid grid-cols-1 md:grid-cols-4 gap-8"></div>
         </div>
     </main>
@@ -79,7 +82,7 @@
     </div>
 
     <footer class="bg-slate-900 text-white py-12 mt-20 border-t-4 border-indigo-600 font-black uppercase text-[9px] tracking-widest text-center">
-        <div class="container mx-auto">SEDES GDF - Secretaria de Desenvolvimento Social <br> Ouvidoria: 162 | Social: (61) 3773-7248</div>
+        <div class="container mx-auto">SEDES GDF - Secretaria de Estado de Desenvolvimento Social <br> Brasília-DF | Ouvidoria: 162 | Social: (61) 3773-7248</div>
     </footer>
 
     <script>
@@ -122,23 +125,25 @@
             if(isCurrentMonth && maxD26 > 0) document.getElementById('vProj').innerText = Math.round((t26/maxD26)*30).toLocaleString();
 
             const medianVal = (arr) => { const s = arr.slice().sort((a,b)=>a-b); const mid = Math.floor(s.length/2); return s.length % 2 !== 0 ? s[mid] : (s[mid-1]+s[mid])/2; };
-            const mVal = medianVal([...d26.v, ...d25.v].filter(x => x > 0)) || 0;
+            const mVal = medianVal([...d25.v].filter(x => x > 0)) || 0;
             document.getElementById('vMed').innerText = Math.round(mVal).toLocaleString();
             document.getElementById('vPeak').innerText = Math.max(...d26.v).toLocaleString();
             document.getElementById('vWeek').innerText = Math.round(t26 / (maxD26/7 || 1)).toLocaleString();
-            
             const totalRede = biData.filter(d => d.y === 2026 && d.m === m).reduce((a,c)=>a+c.t, 0);
             document.getElementById('vShare').innerText = totalRede > 0 ? ((t26/totalRede)*100).toFixed(1) + '%' : '---';
 
             if(charts.l) charts.l.destroy();
             charts.l = new Chart(document.getElementById('mainC'), { type: 'line', data: { labels: Array.from({length:31},(_,i)=>i+1), datasets: [{ label: 'Meta', data: Array(31).fill(mVal), borderColor: '#f97316', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false }, { label: '2026', data: d26.v.map((v,i)=>d26.c[i]?v:null), borderColor: '#4f46e5', borderWidth: 6, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.05)', tension: 0.4 }, { label: '2025', data: d25.v.map((v,i)=>d25.c[i]?v:null), borderColor: '#cbd5e1', borderWidth: 2, fill: false, tension: 0.2 }] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { tooltip: { backgroundColor: '#0f172a', padding: 15, cornerRadius: 15, callbacks: { label: (ctx) => { const v = ctx.raw; if (!v) return ''; let l = ' ' + ctx.dataset.label + ': ' + v.toLocaleString(); if (ctx.dataset.label === '2026' && mVal > 0) l += ' | ' + ((v/mVal)*100).toFixed(1) + '% da Meta'; return l; } } } } }});
 
-            const yK = t26 > 0 ? 2026 : 2025;
+            if(charts.d) charts.d.destroy();
+            const gsF = {}; biData.filter(d => (d.y===(t26>0?2026:2025)) && d.m===m).forEach(x => gsF[x.g] = (gsF[x.g]||0)+x.t);
+            charts.d = new Chart(document.getElementById('donutC'), { type: 'doughnut', data: { labels: Object.keys(gsF), datasets: [{ data: Object.values(gsF), backgroundColor: Object.keys(gsF).map(l=>G_COLORS[l]), borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '80%', plugins: { legend: { display: true, position: 'bottom' } } }});
+
+            const yearKey = t26 > 0 ? 2026 : 2025;
             const pS = {}; const uS = {};
             const gps = g === 'ALL' ? Object.keys(G_COLORS) : [g];
-            gps.forEach(gn => { const n = biDetails[yK] && biDetails[yK][m] && biDetails[yK][m][gn]; if(n) { Object.entries(n.profiles).forEach(([k,v]) => pS[k] = (pS[k]||0)+v); Object.entries(n.units).forEach(([k,v]) => uS[k] = (uS[k]||0)+v); } });
-
-            const rG = (data, id, color) => { const s = Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,5); document.getElementById(id).innerHTML = s.map(([k,v]) => `<div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100 shadow-sm"><p class="text-[9px] font-black text-slate-500 uppercase truncate w-64 font-bold italic">${k}</p><p class="text-xs font-black ${color}">${v.toLocaleString()}</p></div>`).join(''); };
+            gps.forEach(gn => { const n = biDetails[yearKey] && biDetails[yearKey][m] && biDetails[yearKey][m][gn]; if(n) { Object.entries(n.profiles).forEach(([k,v]) => pS[k] = (pS[k]||0)+v); Object.entries(n.units).forEach(([k,v]) => uS[k] = (uS[k]||0)+v); } });
+            const rG = (data, id, color) => { const s = Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,5); document.getElementById(id).innerHTML = s.map(([k,v]) => `<div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100 shadow-sm"><p class="text-[9px] font-black text-slate-500 uppercase truncate w-64">${k}</p><p class="text-xs font-black ${color}">${v.toLocaleString()}</p></div>`).join(''); };
             rG(pS, 'pGrid', 'text-indigo-600'); rG(uS, 'uGrid', 'text-emerald-600');
         }
         window.onload = start;
