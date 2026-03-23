@@ -9,123 +9,72 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .glass-card { background: white; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border-radius: 1.5rem; }
+        .glass-card { background: white; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border-radius: 1.5rem; transition: all 0.3s ease; }
         .chart-container { position: relative; height: 350px; width: 100%; }
-        .active-pill { background: #4f46e5; color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .active-view-btn { background: #4f46e5; color: white; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); }
     </style>
 </head>
 <body class="text-slate-900 pb-20">
 
     <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200 p-6">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-black italic uppercase tracking-tighter">Portal <span class="text-indigo-600">SEDES GDF</span> Intelligence</h1>
-            <div id="statusTag" class="bg-indigo-600 text-white px-4 py-1 rounded-full text-[10px] font-bold animate-pulse">MODO REAL-TIME</div>
+            <h1 class="text-xl font-black italic uppercase">Portal <span class="text-indigo-600">SEDES GDF</span> Intelligence</h1>
+            <div id="statusTag" class="bg-indigo-600 text-white px-4 py-1 rounded-full text-[10px] font-bold animate-pulse">CARREGANDO...</div>
         </div>
     </header>
 
-    <main class="container mx-auto px-6 mt-10">
-        <!-- Painel de Controle -->
-        <div class="glass-card p-6 flex flex-wrap items-center gap-6 mb-10 border-l-8 border-indigo-600">
-            <div class="flex flex-col gap-1">
-                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Mês de Referência</label>
-                <select id="mSel" class="bg-slate-50 font-bold text-sm px-6 py-2 rounded-xl outline-none border-none text-slate-600">
-                    <option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3" selected>Março</option>
-                    <option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option>
-                    <option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option>
-                    <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
-                </select>
-            </div>
-            <div class="flex flex-col gap-1">
-                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Filtro de Rede</label>
-                <select id="gSel" class="bg-indigo-50 font-bold text-sm px-6 py-2 rounded-xl outline-none border-none text-indigo-700">
-                    <option value="ALL">REDE COMPLETA (MÉTRICA GLOBAL)</option>
-                    <option value="CRAS / CREAS / CENTRO POP">A: CRAS & CREAS</option>
-                    <option value="UNIDADE ACOLHIMENTO">B: ACOLHIMENTO</option>
-                    <option value="OSC & POSTO">C: OSC & POSTO</option>
-                </select>
-            </div>
+    <main class="container mx-auto px-6 mt-10 space-y-10">
+        <div class="glass-card p-6 flex flex-wrap items-center gap-6 border-l-8 border-indigo-600">
+            <select id="mSel" class="bg-slate-50 font-bold text-sm px-6 py-2 rounded-xl border-none outline-none text-slate-600">
+                <option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3" selected>Março</option>
+                <option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option>
+            </select>
+            <select id="gSel" class="bg-indigo-50 font-bold text-sm px-6 py-2 rounded-xl border-none outline-none text-indigo-700">
+                <option value="ALL">REDE COMPLETA</option>
+                <option value="CRAS / CREAS / CENTRO POP">A: CRAS & CREAS</option>
+                <option value="UNIDADE ACOLHIMENTO">B: ACOLHIMENTO</option>
+                <option value="OSC & POSTO">C: OSC & POSTO</option>
+            </select>
         </div>
 
-        <!-- KPIs -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            <div class="glass-card p-6 bg-slate-900 text-white shadow-2xl">
-                <p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Volume 2026</p>
-                <h2 class="text-4xl font-black text-[#bef264]" id="v26">---</h2>
-                <div id="vVar" class="text-[10px] font-bold mt-2">---</div>
-            </div>
-            <div class="glass-card p-6"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Pico do Mês</p><h2 class="text-3xl font-black text-indigo-600" id="vPeak">---</h2><p class="text-[8px] font-bold text-slate-400 uppercase">Máximo Diário</p></div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="glass-card p-6 bg-slate-900 text-white shadow-2xl"><p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Volume 2026</p><h2 class="text-4xl font-black text-[#bef264]" id="v26">---</h2><div id="vVar" class="text-[10px] font-bold mt-2">---</div></div>
+            <div class="glass-card p-6"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Pico do Mês</p><h2 class="text-3xl font-black text-indigo-600" id="vPeak">---</h2></div>
             <div class="glass-card p-6 border-b-4 border-orange-400"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Mediana Diária</p><h2 class="text-3xl font-black text-orange-500" id="vMed">---</h2></div>
-            <div class="glass-card p-6 border-b-4 border-emerald-500"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Projeção Final</p><h2 class="text-3xl font-black text-emerald-600" id="vProj">---</h2><p class="text-[8px] font-bold text-slate-400 uppercase italic">Estimativa IA</p></div>
+            <div class="glass-card p-6 border-b-4 border-emerald-500"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Projeção Final</p><h2 class="text-3xl font-black text-emerald-600" id="vProj">---</h2></div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-            <div class="glass-card lg:col-span-8 p-10 flex flex-col">
-                <h3 class="text-xs font-black text-slate-400 uppercase mb-10 tracking-[0.2em] italic">Timeline de Produção YoY</h3>
-                <div class="chart-container"><canvas id="mainC"></canvas></div>
-            </div>
-            <div class="lg:col-span-4 glass-card p-10 flex flex-col justify-center">
-                <h3 class="text-xs font-black text-slate-400 uppercase mb-8 tracking-[0.2em] text-center italic">Esforço por Grupo</h3>
-                <div class="chart-container" style="height:300px;"><canvas id="donutC"></canvas></div>
-            </div>
-        </div>
+        <div class="glass-card p-10 flex flex-col"><h3 class="text-xs font-black text-slate-400 uppercase mb-10 tracking-[0.2em] italic">Timeline de Produção YoY</h3><div class="chart-container"><canvas id="mainC"></canvas></div></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="glass-card p-10">
-                <h3 class="text-xs font-black text-slate-400 uppercase mb-8 italic">Distribuição de Força de Trabalho (Perfis)</h3>
-                <div id="pGrid" class="space-y-4"></div>
-            </div>
-            <div class="glass-card p-10">
-                <h3 class="text-xs font-black text-slate-400 uppercase mb-8 italic">Top 5 Unidades Executoras</h3>
-                <div id="uGrid" class="space-y-4"></div>
-            </div>
-        </div>
-
-        <!-- DICIONÁRIO DE TAXONOMIA RESTAURADO -->
-        <div class="glass-card p-10 border-t-8 border-slate-900 mt-20">
-            <h3 class="text-xl font-black text-slate-800 mb-6 uppercase italic tracking-widest">Dicionário de Taxonomia da Rede</h3>
-            <div id="taxonomyDictionary" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6"></div>
+            <div class="glass-card p-10"><h3 class="text-xs font-black text-slate-400 uppercase mb-8 italic text-center">Esforço por Grupo</h3><div class="chart-container" style="height:300px;"><canvas id="donutC"></canvas></div></div>
+            <div class="glass-card p-10"><h3 class="text-xs font-black text-slate-400 uppercase mb-8 italic">Principais Unidades</h3><div id="uGrid" class="space-y-4"></div></div>
         </div>
     </main>
 
-    <!-- FOOTER INSTITUCIONAL RESTAURADO -->
-    <footer class="bg-slate-900 text-white py-16 mt-20 border-t-4 border-indigo-600">
-        <div class="container mx-auto px-8 text-center md:text-left grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div class="space-y-4">
-                <h4 class="text-xl font-black text-indigo-400 italic uppercase tracking-tighter">SEDES GDF</h4>
-                <p class="text-[10px] text-slate-500 uppercase leading-loose tracking-widest">Secretaria de Estado de Desenvolvimento Social <br>Asa Norte, Brasília-DF</p>
-            </div>
-            <div class="space-y-4">
-                <h5 class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Contato Oficiais</h5>
-                <p class="text-sm font-bold text-slate-300">Ouvidoria: 162 | Social: (61) 3773-7248</p>
-            </div>
-            <div class="space-y-4">
-                <h5 class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Tecnologia</h5>
-                <p class="text-[9px] font-black text-indigo-500 uppercase italic">Power by Orquestrador Antigravity</p>
-            </div>
-        </div>
-    </footer>
-
     <script>
-        let biData; let biDetails; let charts = {};
+        let biData, biDetails, unitMapping, charts = {};
         const G_COLORS = {"CRAS / CREAS / CENTRO POP": "#4f46e5","UNIDADE ACOLHIMENTO": "#a855f7","OSC & POSTO": "#f59e0b","CECON / GESTÃO": "#64748b"};
 
         async function start() {
-            const [dRes, detRes] = await Promise.all([fetch('./data/bi_data_v4.json'), fetch('./data/bi_details_v4.json'), fetch('./data/unit_mapping_v4.json')]);
-            biData = await dRes.json();
-            biDetails = await detRes.json();
-            unitMapping = await (await fetch('./data/unit_mapping_v4.json')).json();
-            
-            // Popular Dicionário
-            const dictContainer = document.getElementById('taxonomyDictionary');
-            dictContainer.innerHTML = Object.entries(unitMapping).map(([group, units]) => `
-                <div class="bg-slate-50 p-4 rounded-3xl border border-slate-100">
-                    <p class="text-[9px] font-black mb-3 px-2 py-1 rounded-full text-center uppercase tracking-tighter" style="background:${G_COLORS[group]}15; color:${G_COLORS[group]}">${group}</p>
-                    <div class="max-h-32 overflow-y-auto pr-2 custom-scrollbar space-y-1">${units.map(u => `<p class="text-[8px] font-bold text-slate-500 uppercase leading-tight">${u}</p>`).join('')}</div>
-                </div>`).join('');
+            try {
+                const [d, dt, m] = await Promise.all([
+                    fetch('./data/bi_data_v4.json').then(r => r.json()),
+                    fetch('./data/bi_details_v4.json').then(r => r.json()),
+                    fetch('./data/unit_mapping_v4.json').then(r => r.json())
+                ]);
+                biData = d; biDetails = dt; unitMapping = m;
+                document.getElementById('statusTag').innerText = "MODO REAL-TIME";
+                document.getElementById('mSel').onchange = render;
+                document.getElementById('gSel').onchange = render;
+                render();
+            } catch (e) { document.getElementById('statusTag').innerText = "ERRO DE DADOS"; }
+        }
 
-            document.getElementById('mSel').onchange = render;
-            document.getElementById('gSel').onchange = render;
-            render();
+        function getM(arr) {
+            const s = arr.slice().sort((a,b)=>a-b);
+            const m = Math.floor(s.length/2);
+            return s.length % 2 !== 0 ? s[m] : (s[m-1]+s[m])/2;
         }
 
         function render() {
@@ -133,126 +82,54 @@
             const g = document.getElementById('gSel').value;
             const filtered = biData.filter(d => (g==='ALL' || d.g === g));
 
-            const d26 = filtered.filter(d => d.y===2026 && d.m===m);
-            const d25 = filtered.filter(d => d.y===2025 && d.m===m);
-
-            // Identificar o último dia com dados em 2026 para comparação proporcional
-            const daysWithData26 = d26.filter(x => x.t > 0).map(x => x.d);
-            const maxDay26 = daysWithData26.length > 0 ? Math.max(...daysWithData26) : 31;
-            const isFuture = daysWithData26.length === 0;
-
-            const getDV = (data, limit = 31) => {
+            const getV = (y) => {
                 const r = Array(31).fill(0);
-                data.forEach(x => { if(x.d <= limit) r[x.d-1] += x.t; });
+                filtered.filter(d => d.y === y && d.m === m).forEach(x => { r[x.d-1] += x.t; });
                 return r;
             };
 
-            const d26v = getDV(d26); 
-            const d25v_full = getDV(d25); // Dados completos para o gráfico
-            const d25v_comp = getDV(d25, maxDay26); // Dados cortados para o KPI
-
+            const d26v = getV(2026); const d25v = getV(2025);
             const t26 = d26v.reduce((a,b)=>a+b, 0);
-            const t25_comp = d25v_comp.reduce((a,b)=>a+b, 0);
+            const t25 = d25v.reduce((a,b)=>a+b, 0);
+            const maxD26 = d26v.filter(x => x > 0).length;
 
             document.getElementById('v26').innerText = t26.toLocaleString();
-            document.getElementById('v25').innerText = t25_comp.toLocaleString();
-            document.getElementById('v25').title = `Volume proporcional até o dia ${maxDay26}`;
-
-            if(t25_comp > 0 && !isFuture) {
-                const diff = ((t26-t25_comp)/t25_comp*100).toFixed(1);
-                document.getElementById('vVar').innerText = `${diff>0?'+':''}${diff}% vs 2025 (P)`;
-                document.getElementById('vVar').className = `text-[10px] font-bold mt-2 ${diff > 0 ? 'text-[#bef264]' : 'text-rose-500'}`;
-            } else { document.getElementById('vVar').innerText = "N/A"; }
-
-            // Mediana e Pico
-            const allV26 = d26v.filter(x => x > 0);
-            const peak26 = allV26.length > 0 ? Math.max(...allV26) : 0;
-            document.getElementById('vPeak').innerText = peak26.toLocaleString();
-
-            // Cálculo da Mediana Diária (Target) baseada em 2025 para servir de meta
-            const allV25 = d25v_full.filter(x => x > 0);
-            let medianVal = 0;
-            if(allV25.length > 0) {
-                const s = [...allV25].sort((a,b)=>a-b);
-                const mid = Math.floor(s.length/2);
-                medianVal = s.length % 2 !== 0 ? s[mid] : (s[mid-1]+s[mid])/2;
-            }
-            document.getElementById('vMed').innerText = Math.round(medianVal).toLocaleString();
-
-            // Projeção Final (Run-rate)
-            if(maxDay26 > 0 && !isFuture) {
-                const currentAvg = t26 / maxDay26;
-                const projection = Math.round(currentAvg * 30);
-                document.getElementById('vProj').innerText = projection.toLocaleString();
-            } else {
-                document.getElementById('vProj').innerText = "---";
-            }
-
-            // Charts
-            if(charts.l) charts.l.destroy();
-            charts.l = new Chart(document.getElementById('mainC'), { 
-                type: 'line', 
-                data: {
-                    labels: Array.from({length:31},(_,i)=>i+1),
-                    datasets: [
-                        { label: 'Mediana (Meta)', data: Array(31).fill(medianVal), borderColor: '#f97316', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false },
-                        { label: '2026', data: d26v.map(v=>v>0?v:null), borderColor: '#4f46e5', borderWidth: 6, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.05)', tension: 0.4 },
-                        { label: '2025', data: d25v_full.map(v=>v>0?v:null), borderColor: '#cbd5e1', borderWidth: 2, fill: false, tension: 0.2 }
-                    ]
-                }, 
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false }, // UNIFICAR POPUP
-                    plugins: {
-                        tooltip: {
-                            backgroundColor: '#0f172a',
-                            padding: 15,
-                            cornerRadius: 15,
-                            callbacks: {
-                                label: (ctx) => {
-                                    const val = ctx.raw;
-                                    if (!val) return '';
-                                    let label = ` ${ctx.dataset.label}: ${val.toLocaleString()}`;
-                                    if (ctx.dataset.label === '2026' && medianVal > 0) {
-                                        const diff = ((val - medianVal)/medianVal*100).toFixed(1);
-                                        label += ` (${diff > 0 ? '+' : ''}${diff}% vs Meta)`;
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    },
-                    scales: { y: { beginAtZero: true } }
-                }
-            });
-
-            if(charts.d) charts.d.destroy();
-            const gs = {}; d26.forEach(x => gs[x.g] = (gs[x.g]||0)+x.t);
-            const donutData = isFuture ? biData.filter(d=>d.y===2025 && d.m===m) : d26;
-            const gsF = {}; donutData.forEach(x => gsF[x.g] = (gsF[x.g]||0)+x.t);
-
-            charts.d = new Chart(document.getElementById('donutC'), { type: 'doughnut', data: { labels: Object.keys(gsF), datasets: [{ data: Object.values(gsF), backgroundColor: Object.keys(gsF).map(l=>G_COLORS[l]), borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '80%' }});
-
-            // Detalhes de Perfis e Unidades
-            const yearKey = isFuture ? 2025 : 2026;
-            const pStats = {}; const uStats = {};
-            const groupsToScan = g === 'ALL' ? Object.keys(G_COLORS) : [g];
+            document.getElementById('vPeak').innerText = Math.max(...d26v).toLocaleString();
             
-            groupsToScan.forEach(groupName => {
-                const node = biDetails[yearKey] && biDetails[yearKey][m] && biDetails[yearKey][m][groupName];
-                if(node) {
-                    Object.entries(node.profiles).forEach(([k,v]) => pStats[k] = (pStats[k]||0)+v);
-                    Object.entries(node.units).forEach(([k,v]) => uStats[k] = (uStats[k]||0)+v);
-                }
-            });
+            const med = getM([...d26v, ...d25v].filter(x => x > 0));
+            document.getElementById('vMed').innerText = Math.round(med || 0).toLocaleString();
 
-            const renderL = (data, id, color) => {
-                const sorted = Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,5);
-                document.getElementById(id).innerHTML = sorted.map(([k,v]) => `<div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100"><p class="text-[9px] font-black text-slate-500 uppercase truncate w-64">${k}</p><p class="text-xs font-black ${color}">${v.toLocaleString()}</p></div>`).join('');
-            };
-            renderL(pStats, 'pGrid', 'text-indigo-600');
-            renderL(uStats, 'uGrid', 'text-emerald-600');
+            const t25Comp = d25v.slice(0, maxD26 || 31).reduce((a,b)=>a+b, 0);
+            if(t25Comp > 0) {
+                const diff = ((t26-t25Comp)/t25Comp*100).toFixed(1);
+                document.getElementById('vVar').innerText = `${diff>0?'+':''}${diff}% vs 2025`;
+            }
+
+            if(maxD26 > 0) document.getElementById('vProj').innerText = Math.round((t26/maxD26)*30).toLocaleString();
+
+            // Line Chart
+            if(charts.l) charts.l.destroy();
+            charts.l = new Chart(document.getElementById('mainC'), { type: 'line', data: {
+                labels: Array.from({length:31},(_,i)=>i+1),
+                datasets: [
+                    { label: '2026', data: d26v.map(v=>v>0?v:null), borderColor: '#4f46e5', borderWidth: 5, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.05)', tension: 0.4 },
+                    { label: '2025', data: d25v.map(v=>v>0?v:null), borderColor: '#cbd5e1', borderWidth: 2, fill: false, tension: 0.2 }
+                ]
+            }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false } }});
+
+            // Donut Chart
+            if(charts.d) charts.d.destroy();
+            const gs = {}; biData.filter(d => d.y===2026 && d.m===m).forEach(x => gs[x.g] = (gs[x.g]||0)+x.t);
+            charts.d = new Chart(document.getElementById('donutC'), { type: 'doughnut', data: { labels: Object.keys(gs), datasets: [{ data: Object.values(gs), backgroundColor: Object.keys(gs).map(l=>G_COLORS[l]), borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '80%' }});
+
+            // Units
+            const uStats = {};
+            (g === 'ALL' ? Object.keys(G_COLORS) : [g]).forEach(gn => {
+                const node = biDetails[2026] && biDetails[2026][m] && biDetails[2026][m][gn];
+                if(node) Object.entries(node.units).forEach(([k,v]) => uStats[k] = (uStats[k]||0)+v);
+            });
+            const sortedU = Object.entries(uStats).sort((a,b)=>b[1]-a[1]).slice(0,5);
+            document.getElementById('uGrid').innerHTML = sortedU.map(([n,v]) => `<div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100"><p class="text-[9px] font-black text-slate-500 uppercase truncate w-64 font-bold italic">${n}</p><p class="text-xs font-black text-emerald-600">${v.toLocaleString()}</p></div>`).join('');
         }
         window.onload = start;
     </script>
