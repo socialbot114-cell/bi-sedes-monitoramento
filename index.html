@@ -139,6 +139,11 @@
                     <p class="text-[9px] font-black mb-3 px-2 py-1 rounded-full text-center uppercase tracking-tighter" style="background:${GROUP_COLORS[group]}15; color:${GROUP_COLORS[group]}">${group}</p>
                     <div class="max-h-32 overflow-y-auto pr-2 custom-scrollbar space-y-1">${units.map(u => `<p class="text-[7px] font-bold text-slate-400 uppercase leading-tight">${u}</p>`).join('')}</div>
                 </div>`).join('');
+            
+            // CORREÇÃO: Escutar mudanças nos seletores
+            document.getElementById('monthSelector').addEventListener('change', updateDashboard);
+            document.getElementById('groupSelector').addEventListener('change', updateDashboard);
+            
             updateDashboard();
         }
 
