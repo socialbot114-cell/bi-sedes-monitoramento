@@ -4,7 +4,7 @@ import os
 from collections import defaultdict
 from datetime import datetime
 
-CSV_PATH = "/home/richard/Documentos/monitoramento /novos dados 23 03 2026.csv"
+CSV_PATH = "/home/richard/Documentos/monitoramento /25 03 2026.csv"
 OUTPUT_DIR = "/home/richard/Documentos/monitoramento /bi-sedes-monitoramento/data"
 
 
