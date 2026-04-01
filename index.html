@@ -24,21 +24,24 @@
 
     <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-slate-200 p-6 shadow-sm">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-black italic uppercase">SEDES <span class="text-indigo-600">GDF Analytics</span></h1>
-            <div id="statusTag" class="bg-indigo-600 text-white px-4 py-1 rounded-full text-[10px] font-bold animate-pulse">MODO REAL-TIME</div>
+            <div>
+                <span class="bg-indigo-100 text-indigo-600 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-1 inline-block italic">SEDES Intelligence v13.0</span>
+                <h1 class="text-xl font-black italic uppercase tracking-tighter text-slate-800">Portal <span class="text-indigo-600">SEDES GDF</span> Intelligence</h1>
+            </div>
+            <div id="statusTag" class="bg-indigo-600 text-white px-4 py-1 rounded-full text-[10px] font-bold animate-pulse">ABRIL: REAL-TIME</div>
         </div>
     </header>
 
     <main class="container mx-auto px-6 mt-10 space-y-12">
         <div id="viewMensal" class="space-y-12">
             <div class="glass-card p-6 flex flex-wrap items-center gap-6 shadow-xl border-l-8 border-indigo-600">
-                <select id="mSel" class="bg-slate-50 font-bold text-sm px-6 py-2 rounded-xl border-none outline-none text-slate-600">
-                    <option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3" selected>Março</option>
-                    <option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option>
+                <select id="mSel" class="bg-slate-50 font-bold text-sm px-6 py-2 rounded-xl border-none outline-none cursor-pointer text-slate-700">
+                    <option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option>
+                    <option value="4" selected>Abril (Atual)</option><option value="5">Maio</option><option value="6">Junho</option>
                     <option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option>
                     <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
                 </select>
-                <select id="gSel" class="bg-indigo-50 font-bold text-sm px-6 py-2 rounded-xl outline-none border-none text-indigo-700">
+                <select id="gSel" class="bg-indigo-50 font-bold text-sm px-6 py-2 rounded-xl border-none outline-none text-indigo-700 cursor-pointer">
                     <option value="ALL">REDE COMPLETA</option>
                     <option value="CRAS / CREAS / CENTRO POP">A: CRAS & CREAS</option>
                     <option value="UNIDADE ACOLHIMENTO">B: ACOLHIMENTO</option>
@@ -48,7 +51,7 @@
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
                 <div class="glass-card p-6 bg-slate-900 text-white shadow-2xl"><p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Volume 2026</p><h2 class="text-4xl font-black text-[#bef264]" id="v26">---</h2><div id="vVar" class="text-[10px] font-bold mt-2">---</div></div>
-                <div class="glass-card p-6 border-b-4 border-purple-500"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1 text-purple-600">Total Mês 2025</p><h2 class="text-3xl font-black text-slate-700" id="v25Full">---</h2><p class="text-[8px] font-bold text-slate-400 uppercase">Fechamento Anterior</p></div>
+                <div class="glass-card p-6 border-b-4 border-purple-500"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1 text-purple-600">Total Mês 2025</p><h2 class="text-3xl font-black text-slate-700" id="v25Full">---</h2><p class="text-[8px] font-bold text-slate-400 uppercase italic">Referência Histórica</p></div>
                 <div class="glass-card p-6 border-b-4 border-orange-400"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1 text-orange-500">Mediana (Meta)</p><h2 class="text-3xl font-black text-orange-500" id="vMed">---</h2></div>
                 <div id="projCard" class="glass-card p-6 border-b-4 border-emerald-500"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Projeção Final</p><h2 class="text-3xl font-black text-emerald-600" id="vProj">---</h2></div>
                 <div class="glass-card p-6 border-l-4 border-indigo-500"><p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Pico do Mês</p><h2 class="text-3xl font-black text-slate-800" id="vPeak">---</h2></div>
@@ -59,7 +62,7 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
                 <div class="glass-card lg:col-span-8 p-10 flex flex-col"><h3 class="text-xs font-black text-slate-400 uppercase mb-10 tracking-[0.2em] italic">Tendência Diária e Mediana (YoY)</h3><div class="chart-container"><canvas id="mainC"></canvas></div></div>
-                <div class="lg:col-span-4 glass-card p-10 flex flex-col justify-center"><h3 class="text-xs font-black text-slate-400 uppercase mb-8 text-center italic">Esforço por Grupo</h3><div class="chart-container" style="height:300px;"><canvas id="donutC"></canvas></div></div>
+                <div class="lg:col-span-4 glass-card p-10 flex flex-col justify-center"><h3 class="text-xs font-black text-slate-400 uppercase mb-8 text-center italic text-xs">Esforço Mensal por Grupo</h3><div class="chart-container" style="height:300px;"><canvas id="donutC"></canvas></div></div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -93,7 +96,7 @@
         async function start() {
             const [d, dt, m] = await Promise.all([fetch('./data/bi_data_v4.json').then(r=>r.json()), fetch('./data/bi_details_v4.json').then(r=>r.json()), fetch('./data/unit_mapping_v4.json').then(r=>r.json())]);
             biData = d; biDetails = dt; unitMapping = m;
-            document.getElementById('statusTag').innerText = "MODO REAL-TIME";
+            document.getElementById('statusTag').innerText = "ABRIL: REAL-TIME";
             document.getElementById('taxonomyDictionary').innerHTML = Object.entries(unitMapping).map(([gp, u]) => `<div class="space-y-4"><p class="text-[9px] font-black p-2 rounded-lg text-center" style="background:${G_COLORS[gp]}15; color:${G_COLORS[gp]}">${gp}</p><div class="max-h-40 overflow-y-auto pr-2 custom-scrollbar text-[8px] font-bold text-slate-500 space-y-1">${u.map(x => `<p>${x}</p>`).join('')}</div></div>`).join('');
             document.getElementById('mSel').onchange = render;
             document.getElementById('gSel').onchange = render;
@@ -117,11 +120,11 @@
             const d26 = getV(2026); const d25 = getV(2025);
             const t26 = d26.v.reduce((a,b)=>a+b, 0); const t25Full = d25.v.reduce((a,b)=>a+b, 0);
             const maxD26 = d26.c.filter(x=>x===1).length;
-            const isCurrentMonth = m === 3;
+            const isCurrentMonth = m === 4;
 
             document.getElementById('v26').innerText = t26.toLocaleString();
             document.getElementById('v25Full').innerText = t25Full.toLocaleString();
-            document.getElementById('projCard').style.display = isCurrentMonth ? 'block' : 'none';
+            document.getElementById('projCard').style.display = (m >= 4) ? 'block' : 'none';
 
             const medianVal = (arr) => { const s = arr.slice().sort((a,b)=>a-b); const mid = Math.floor(s.length/2); return s.length % 2 !== 0 ? s[mid] : (s[mid-1]+s[mid])/2; };
             const mVal = medianVal([...d25.v].filter(x => x > 0)) || 0;
@@ -132,10 +135,15 @@
             const totalRede = biData.filter(d => d.y === 2026 && d.m === m).reduce((a,c)=>a+c.t, 0);
             document.getElementById('vShare').innerText = totalRede > 0 ? ((t26/totalRede)*100).toFixed(1) + '%' : '---';
 
-            if(isCurrentMonth && maxD26 > 0) document.getElementById('vProj').innerText = Math.round((t26/maxD26)*30).toLocaleString();
+            if(isCurrentMonth) {
+                const proj = maxD26 > 0 ? Math.round((t26/maxD26)*30) : Math.round(mVal);
+                document.getElementById('vProj').innerText = proj.toLocaleString();
+            } else if (m < 4) {
+                document.getElementById('vProj').innerText = t26.toLocaleString();
+            }
 
             if(charts.l) charts.l.destroy();
-            charts.l = new Chart(document.getElementById('mainC'), { type: 'line', data: { labels: Array.from({length:31},(_,i)=>i+1), datasets: [{ label: 'Meta', data: Array(31).fill(mVal), borderColor: '#f97316', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false }, { label: 'Mínimo Lei', data: Array(31).fill(minLei), borderColor: '#ef4444', borderWidth: 1, pointRadius: 0, fill: false }, { label: '2026', data: d26.v.map((v,i)=>d26.c[i]?v:null), borderColor: '#4f46e5', borderWidth: 6, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.05)', tension: 0.4 }, { label: '2025', data: d25.v.map((v,i)=>d25.c[i]?v:null), borderColor: '#cbd5e1', borderWidth: 2, fill: false, tension: 0.2 }] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { tooltip: { backgroundColor: '#0f172a', padding: 20, cornerRadius: 15, callbacks: { label: (ctx) => { const v = ctx.raw; if (!v) return ''; let l = ' ' + ctx.dataset.label + ': ' + v.toLocaleString(); if (ctx.dataset.label === '2026' && mVal > 0) { const diff = (((v/mVal)-1)*100).toFixed(1); l += ` | ${diff>0?'+':''}${diff}% ${diff>0?'acima':'abaixo'} da Meta`; if (v < minLei) l += ' ⚠️ CRÍTICO'; } return l; } } } } }});
+            charts.l = new Chart(document.getElementById('mainC'), { type: 'line', data: { labels: Array.from({length:31},(_,i)=>i+1), datasets: [{ label: 'Meta', data: Array(31).fill(mVal), borderColor: '#f97316', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false }, { label: 'Mínimo Lei', data: Array(31).fill(minLei), borderColor: '#ef4444', borderWidth: 1, pointRadius: 0, fill: false }, { label: '2026', data: d26.v.map((v,i)=>d26.c[i]?v:null), borderColor: '#4f46e5', borderWidth: 6, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.05)', tension: 0.4 }, { label: '2025', data: d25.v.map((v,i)=>d25.c[i]?v:null), borderColor: '#cbd5e1', borderWidth: 2, fill: false, tension: 0.2 }] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { tooltip: { backgroundColor: '#0f172a', padding: 20, cornerRadius: 15, callbacks: { label: (ctx) => { const v = ctx.raw; if (!v) return ''; let l = ' ' + ctx.dataset.label + ': ' + v.toLocaleString(); if (ctx.dataset.label === '2026' && mVal > 0) { const diff = (((v/mVal)-1)*100).toFixed(1); l += ` | ${diff>0?'+':''}${diff}% vs Meta`; if (v < minLei) l += ' ⚠️ CRÍTICO'; } return l; } } } } }});
 
             if(charts.d) charts.d.destroy();
             const gsF = {}; biData.filter(d => (d.y===(t26>0?2026:2025)) && d.m===m).forEach(x => gsF[x.g] = (gsF[x.g]||0)+x.t);
@@ -145,7 +153,7 @@
             const pS = {}; const uS = {};
             const gps = g === 'ALL' ? Object.keys(G_COLORS) : [g];
             gps.forEach(gn => { const n = biDetails[yearKey] && biDetails[yearKey][m] && biDetails[yearKey][m][gn]; if(n) { Object.entries(n.profiles).forEach(([k,v]) => pS[k] = (pS[k]||0)+v); Object.entries(n.units).forEach(([k,v]) => uS[k] = (uS[k]||0)+v); } });
-            const rG = (data, id, color) => { const s = Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,5); document.getElementById(id).innerHTML = s.map(([k,v]) => `<div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100 shadow-sm"><p class="text-[9px] font-black text-slate-500 uppercase truncate w-64 font-bold italic">${k}</p><p class="text-xs font-black ${color}">${v.toLocaleString()}</p></div>`).join(''); };
+            const rG = (data, id, color) => { const s = Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,5); document.getElementById(id).innerHTML = s.map(([k,v]) => `<div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100 shadow-sm"><p class="text-[9px] font-black text-slate-500 uppercase truncate w-64 font-bold italic text-xs">${k}</p><p class="text-xs font-black ${color}">${v.toLocaleString()}</p></div>`).join(''); };
             rG(pS, 'pGrid', 'text-indigo-600'); rG(uS, 'uGrid', 'text-emerald-600');
         }
         window.onload = start;
