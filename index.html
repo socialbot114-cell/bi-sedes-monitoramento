@@ -3,181 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Executive BI Platinum - SEDES GDF</title>
+    <title>BI SEDES GDF - Strategic Intelligence</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at top left, #f8fafc, #eff6ff); color: #0f172a; min-height: 100vh; }
-        .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05); border-radius: 2.5rem; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .glass-card:hover { transform: translateY(-8px); box-shadow: 0 40px 60px -15px rgba(79, 70, 229, 0.1); }
-        .kpi-gradient { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
-        .text-neon { color: #bef264; text-shadow: 0 0 15px rgba(190, 242, 100, 0.5); }
-        .view-switcher { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 0.6rem; border-radius: 3rem; }
-        .active-view-btn { background: #bef264; color: #0f172a; font-weight: 900; box-shadow: 0 0 25px rgba(190, 242, 100, 0.6); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .card { background: white; border: 1px solid #e2e8f0; border-radius: 1.25rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); transition: all 0.2s; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); }
+        .chart-container { position: relative; height: 350px; width: 100%; }
+        #map { height: 450px; width: 100%; border-radius: 1rem; }
         .hidden-view { display: none !important; }
-        #map { height: 550px; width: 100%; border-radius: 2.5rem; border: 8px solid white; box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .active-pill { background: #4f46e5; color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
 </head>
-<body class="pb-40">
+<body class="pb-32">
 
-    <!-- Header Fixo Platinum -->
-    <header class="sticky top-0 z-[100] bg-white/60 backdrop-blur-3xl border-b border-white/40 p-8 shadow-sm">
-        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex items-center gap-5">
-                <div class="w-14 h-14 bg-slate-900 rounded-[1.5rem] flex items-center justify-center text-[#bef264] shadow-2xl rotate-3">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                </div>
-                <div>
-                    <span class="text-indigo-600 text-[10px] font-black uppercase tracking-[0.4em] mb-1 block italic">SEDES Intelligence Elite</span>
-                    <h1 class="text-3xl md:text-4xl font-black tracking-tighter uppercase italic leading-none">Dashboard <span class="text-indigo-600 underline decoration-indigo-100 decoration-8">SEDES GDF</span></h1>
-                </div>
-            </div>
-            <div id="statusAlert" class="bg-emerald-500/10 text-emerald-600 px-6 py-2 rounded-full text-xs font-black border border-emerald-500/20 animate-pulse uppercase tracking-widest">● System Status: Optimized</div>
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 p-5">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-black tracking-tight italic uppercase">SEDES <span class="text-indigo-600">GDF Analytics</span></h1>
+            <div id="statusTag" class="bg-indigo-600 text-white px-4 py-1 rounded-full text-[10px] font-bold animate-pulse">MODO REAL-TIME</div>
         </div>
     </header>
 
-    <main class="container mx-auto px-6 mt-16">
-
-        <!-- ================= VIEW MENSAL ================= -->
-        <div id="viewMensal" class="space-y-16">
-            
-            <!-- Controle de Filtros Premium -->
-            <div class="glass-card p-8 border-l-[12px] border-indigo-600 flex flex-wrap items-center gap-8 shadow-2xl relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-10 opacity-[0.03] font-black text-9xl italic pointer-events-none uppercase">Micro</div>
-                <div class="flex flex-col gap-2">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Period Selection</label>
-                    <select id="mSel" class="bg-slate-100 font-extrabold text-sm px-8 py-4 rounded-2xl border-none outline-none cursor-pointer text-slate-700 hover:bg-slate-200 transition-all">
-                        <option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option>
-                        <option value="4" selected>Abril (Operacional)</option><option value="5">Maio</option><option value="6">Junho</option>
-                        <option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option>
-                        <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+    <main class="container mx-auto px-6 mt-8">
+        
+        <div id="viewMensal" class="space-y-10">
+            <!-- Filtros Refinados -->
+            <div class="card p-5 flex flex-wrap items-center gap-6 border-l-4 border-indigo-600">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Mês de Referência</label>
+                    <select id="mSel" class="bg-slate-50 font-bold text-sm px-4 py-2 rounded-xl outline-none border-none text-slate-600 cursor-pointer">
+                        <option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3" selected>Março</option>
+                        <option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option>
                     </select>
                 </div>
-                <div class="h-16 w-px bg-slate-200 mx-2 hidden md:block"></div>
-                <div class="flex flex-col gap-2">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Network Filter</label>
-                    <select id="gSel" class="bg-indigo-50 font-extrabold text-sm px-8 py-4 rounded-2xl border-none outline-none cursor-pointer text-indigo-700 hover:bg-indigo-100 transition-all">
-                        <option value="ALL">REDE COMPLETA (GLOBAL)</option>
-                        <option value="CRAS / CREAS / CENTRO POP">GRUPO A: PORTA DE ENTRADA</option>
-                        <option value="UNIDADE ACOLHIMENTO">GRUPO B: PROTEÇÃO ESPECIAL</option>
-                        <option value="OSC & POSTO">GRUPO C: PARCERIAS E APOIO</option>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Filtro de Rede</label>
+                    <select id="gSel" class="bg-indigo-50 font-bold text-sm px-4 py-2 rounded-xl outline-none border-none text-indigo-700 cursor-pointer">
+                        <option value="ALL">REDE COMPLETA</option>
+                        <option value="CRAS / CREAS / CENTRO POP">A: CRAS & CREAS</option>
+                        <option value="UNIDADE ACOLHIMENTO">B: ACOLHIMENTO</option>
+                        <option value="OSC & POSTO">C: OSC & POSTO</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Grid de 8 KPIs Estilo Luxury -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                <div class="glass-card p-10 kpi-gradient text-white relative overflow-hidden group">
-                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-indigo-500/10 rounded-full group-hover:scale-110 transition-all"></div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Volume 2026</p>
-                    <h2 class="text-5xl font-black text-neon tracking-tighter" id="v26">---</h2>
-                    <div id="vVar" class="text-[11px] font-bold mt-4">---</div>
-                </div>
-                <div class="glass-card p-10 border-b-8 border-purple-500"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Histórico 2025</p><h2 class="text-4xl font-black text-slate-800 tracking-tighter" id="v25Full">---</h2><p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-tighter">Volume Fechado</p></div>
-                <div class="glass-card p-10 border-b-8 border-orange-500"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 text-orange-500">Target Mediana</p><h2 class="text-4xl font-black text-slate-800 tracking-tighter" id="vMed">---</h2><p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-tighter">Referência de Meta</p></div>
-                <div id="projCard" class="glass-card p-10 border-b-8 border-emerald-500"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 text-emerald-600">Projeção IA</p><h2 class="text-4xl font-black text-slate-800 tracking-tighter" id="vProj">---</h2><p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-tighter italic">Ritmo Operacional</p></div>
-                
-                <div class="glass-card p-8 border-l-8 border-indigo-500"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Pico Registrado</p><h2 class="text-3xl font-black text-slate-800" id="vPeak">---</h2></div>
-                <div class="glass-card p-8 border-l-8 border-slate-300"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Média Semanal</p><h2 class="text-3xl font-black text-slate-700" id="vWeek">---</h2></div>
-                <div class="glass-card p-8 border-l-8 border-blue-400"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Share da Rede %</p><h2 class="text-3xl font-black text-blue-600" id="vShare">---</h2></div>
-                <div class="glass-card p-8 bg-slate-900 text-white"><p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Acumulado 26</p><h2 class="text-3xl font-black text-white">179.029</h2></div>
+            <!-- KPIs Reduzidos e Elegantes -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+                <div class="card p-6 bg-slate-900 text-white"><p class="text-[10px] font-bold text-slate-500 uppercase mb-1">Volume 2026</p><h2 class="text-3xl font-black text-[#bef264]" id="v26">---</h2><div id="vVar" class="text-[10px] font-bold mt-1">---</div></div>
+                <div class="card p-6 border-b-4 border-purple-500"><p class="text-[10px] font-bold text-slate-400 uppercase mb-1 text-purple-600">Total Mês 2025</p><h2 class="text-3xl font-black text-slate-700" id="v25Full">---</h2></div>
+                <div class="card p-6 border-b-4 border-orange-400"><p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Mediana (Meta)</p><h2 class="text-3xl font-black text-orange-500" id="vMed">---</h2></div>
+                <div class="card p-6 border-b-4 border-emerald-500"><p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Projeção Final</p><h2 class="text-3xl font-black text-emerald-600" id="vProj">---</h2></div>
             </div>
 
-            <!-- Gráfico de Tendência com Glow -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                <div class="glass-card lg:col-span-8 p-12 flex flex-col">
-                    <div class="flex justify-between items-center mb-12">
-                        <h3 class="text-xl font-black text-slate-800 uppercase tracking-tighter italic">Timeline de Produção Real-Time</h3>
-                        <div class="flex gap-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                            <span class="flex items-center gap-2"><span class="w-3 h-3 bg-indigo-600 rounded-full shadow-[0_0_10px_#4f46e5]"></span> 2026</span>
-                            <span class="flex items-center gap-2"><span class="w-3 h-3 bg-slate-300 rounded-full"></span> 2025</span>
-                        </div>
-                    </div>
-                    <div class="chart-container"><canvas id="mainC"></canvas></div>
-                </div>
-                <div class="lg:col-span-4 glass-card p-12 flex flex-col justify-center text-center">
-                    <h3 class="text-xs font-black text-slate-400 uppercase mb-10 tracking-[0.3em]">Distribuição por Grupo</h3>
-                    <div class="chart-container h-[300px] relative flex items-center justify-center">
-                        <canvas id="donutC"></canvas>
-                        <div class="absolute flex flex-col items-center">
-                            <span class="text-[10px] font-black text-slate-400 uppercase">Total</span>
-                            <span class="text-3xl font-black text-slate-800" id="donutTotal">---</span>
-                        </div>
-                    </div>
-                    <div id="donutLegend" class="mt-10 grid grid-cols-2 gap-3"></div>
-                </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="card lg:col-span-8 p-8 flex flex-col"><h3 class="text-xs font-black text-slate-400 uppercase mb-8 italic">Tendência Diária (YoY)</h3><div class="chart-container"><canvas id="mainC"></canvas></div></div>
+                <div class="card lg:col-span-4 p-8 flex flex-col items-center justify-center"><h3 class="text-xs font-black text-slate-400 uppercase mb-8 italic">Distribuição por Grupo</h3><div class="chart-container h-[250px]"><canvas id="donutC"></canvas></div><div id="donutLegend" class="mt-6 grid grid-cols-2 gap-2 text-[8px] font-bold uppercase text-slate-400"></div></div>
             </div>
 
-            <!-- Força de Trabalho -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                <div class="glass-card p-12">
-                    <h3 class="text-xl font-black text-slate-800 mb-10 uppercase italic tracking-tighter">Perfis em Atividade (Workforce)</h3>
-                    <div id="pGrid" class="space-y-4"></div>
-                </div>
-                <div class="glass-card p-12 border-t-8 border-indigo-600">
-                    <h3 class="text-xl font-black text-slate-800 mb-10 uppercase italic tracking-tighter text-indigo-600">Unidades Top Volume</h3>
-                    <div id="uGrid" class="space-y-4"></div>
-                </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card p-8"><h3 class="text-xs font-black text-slate-400 uppercase mb-6 italic">Perfis de Servidores</h3><div id="pGrid" class="space-y-3"></div></div>
+                <div class="card p-8"><h3 class="text-xs font-black text-slate-400 uppercase mb-6 italic">Principais Unidades</h3><div id="uGrid" class="space-y-3"></div></div>
             </div>
         </div>
 
         <!-- ================= VIEW ANUAL ================= -->
-        <div id="viewAnual" class="hidden-view space-y-16">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div class="glass-card p-10 border-l-[12px] border-slate-300"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Fechado 2025</p><h2 class="text-4xl font-black text-slate-800">864.676</h2></div>
-                <div class="glass-card p-10 border-l-[12px] border-indigo-600 bg-indigo-50"><p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2">Volume Acumulado 26</p><h2 class="text-4xl font-black text-indigo-600">179.029</h2></div>
-                <div class="glass-card p-10 kpi-gradient text-white shadow-2xl"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Macro Growth YTD</p><h2 class="text-5xl font-black text-neon tracking-tighter" id="macroGrowth">---</h2></div>
-                <div class="glass-card p-10 border-l-[12px] border-emerald-500 bg-emerald-50/20"><p class="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-2">Projeção Anual 2026</p><h2 class="text-4xl font-black text-slate-800">~910k</h2></div>
-            </div>
-
-            <div class="glass-card p-12 relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-16 opacity-[0.03] font-black text-9xl italic pointer-events-none uppercase">Map</div>
-                <h3 class="text-2xl font-black text-slate-800 mb-12 uppercase italic text-center tracking-tighter flex items-center justify-center gap-4">
-                    <span class="w-10 h-1 bg-indigo-600 rounded-full"></span> Inteligência Geográfica Regional <span class="w-10 h-1 bg-indigo-600 rounded-full"></span>
-                </h3>
-                <div id="map"></div>
-            </div>
-
-            <div class="glass-card p-12"><h3 class="text-xl font-black text-slate-800 mb-12 uppercase italic text-center tracking-widest">Curva de Sazonalidade Anual (Mês a Mês)</h3><div class="chart-container h-[500px]"><canvas id="lineChartAnual"></canvas></div></div>
+        <div id="viewAnual" class="hidden-view space-y-12">
+            <div id="map" class="card shadow-lg"></div>
         </div>
 
-        <!-- Dicionário Global -->
-        <div class="glass-card p-12 border-t-[12px] border-slate-900 mt-20">
-            <h3 class="text-2xl font-black text-slate-800 mb-12 uppercase italic tracking-tighter">Taxonomia Estratégica da Rede</h3>
-            <div id="taxonomyDictionary" class="grid grid-cols-1 md:grid-cols-4 gap-10 text-center"></div>
+        <!-- Dicionário -->
+        <div class="card p-8 border-t-8 border-slate-900 mt-16">
+            <h3 class="text-lg font-black text-slate-800 mb-8 uppercase italic">Taxonomia da Rede Assistencial</h3>
+            <div id="taxonomyDictionary" class="grid grid-cols-1 md:grid-cols-4 gap-6 text-[9px] font-bold text-slate-500 uppercase"></div>
         </div>
     </main>
 
-    <!-- Switcher Premium -->
-    <div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] view-switcher flex gap-3">
-        <button onclick="switchView('mensal')" id="btnM" class="px-14 py-4 rounded-full text-xs font-black uppercase tracking-widest transition-all active-view-btn">VISTA MENSAL</button>
-        <button onclick="switchView('anual')" id="btnA" class="px-14 py-4 rounded-full text-xs font-black uppercase tracking-widest transition-all text-white/30 hover:text-white">VISTA ANUAL</button>
+    <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-slate-900 p-2 rounded-full shadow-2xl flex gap-2">
+        <button onclick="switchView('mensal')" id="btnM" class="px-8 py-3 rounded-full text-[10px] font-black uppercase active-pill transition-all">MENSAL</button>
+        <button onclick="switchView('anual')" id="btnA" class="px-8 py-3 rounded-full text-[10px] font-black uppercase text-white/40 hover:text-white transition-all">ANUAL</button>
     </div>
 
-    <!-- Footer GDF Premium -->
-    <footer class="bg-[#0f172a] text-white py-24 mt-20 border-t-8 border-indigo-600 font-black uppercase text-[11px] tracking-widest">
-        <div class="container mx-auto px-10 grid grid-cols-1 md:grid-cols-3 gap-16">
-            <div class="space-y-6">
-                <h4 class="text-3xl italic text-indigo-400 tracking-tighter">SEDES GDF</h4>
-                <p class="text-slate-500 leading-loose">Secretaria de Estado de Desenvolvimento Social do Distrito Federal.<br>SEPN 515, Asa Norte, Brasília-DF</p>
-            </div>
-            <div class="space-y-6 text-center md:text-left">
-                <h5 class="text-indigo-600 text-sm italic mb-4">Central de Atendimento</h5>
-                <p class="text-lg">Ouvidoria: <span class="text-white text-2xl font-black">162</span></p>
-                <p class="text-slate-400">Social: (61) 3773-7248</p>
-            </div>
-            <div class="space-y-6 text-center md:text-right">
-                <h5 class="text-indigo-600 text-sm italic mb-4">Tecnologia Analítica</h5>
-                <p class="text-slate-500">Desenvolvido por Orquestrador Antigravity</p>
-                <p class="text-indigo-400 text-xs tracking-tighter">Advanced Intelligence Ecosystem</p>
-            </div>
-        </div>
-    </footer>
+    <footer class="text-center py-12 text-slate-400 text-[9px] font-bold uppercase tracking-widest">SEDES GDF - Secretaria de Estado de Desenvolvimento Social</footer>
 
     <script>
         let biData, biDetails, unitMapping, charts = {}, map;
@@ -192,39 +104,35 @@
                 ]);
                 biData = d; biDetails = dt; unitMapping = m;
                 document.getElementById('statusTag').innerText = "SYSTEM ACTIVE";
-                populateDictionary();
-                document.getElementById('mSel').onchange = render;
-                document.getElementById('gSel').onchange = render;
-                render();
-            } catch (e) { document.getElementById('statusTag').innerText = "DATA ERROR"; }
-        }
+                
+                document.getElementById('taxonomyDictionary').innerHTML = Object.entries(unitMapping).map(([gp, u]) => `
+                    <div class="space-y-2"><p class="text-indigo-600 border-b border-slate-100 pb-1">${gp}</p>
+                    <div class="max-h-32 overflow-y-auto pr-1 custom-scrollbar">${u.map(x => `<p class="mb-1">${x}</p>`).join('')}</div></div>`).join('');
 
-        function populateDictionary() {
-            document.getElementById('taxonomyDictionary').innerHTML = Object.entries(unitMapping).map(([gp, u]) => `
-                <div class="space-y-6 p-6 bg-slate-50 rounded-3xl border border-slate-100 transition-all hover:bg-white hover:shadow-xl">
-                    <p class="text-[10px] font-black p-3 rounded-xl uppercase tracking-widest text-center" style="background:${G_COLORS[gp]}15; color:${G_COLORS[gp]}">${gp}</p>
-                    <div class="max-h-56 overflow-y-auto pr-3 custom-scrollbar text-[9px] font-extrabold text-slate-500 space-y-2 uppercase leading-tight italic">${u.map(x => `<p class="border-b border-slate-100 pb-1">${x}</p>`).join('')}</div>
-                </div>`).join('');
+                // FIX: Atribuição direta para garantir funcionamento
+                const mSel = document.getElementById('mSel');
+                const gSel = document.getElementById('gSel');
+                mSel.onchange = () => { console.log("Mês alterado"); render(); };
+                gSel.onchange = () => { console.log("Grupo alterado"); render(); };
+
+                render();
+            } catch (e) { document.getElementById('statusTag').innerText = "ERRO CARREGAMENTO"; }
         }
 
         function switchView(v) {
             document.getElementById('viewMensal').classList.toggle('hidden-view', v!=='mensal');
             document.getElementById('viewAnual').classList.toggle('hidden-view', v!=='anual');
-            document.getElementById('btnM').className = v==='mensal' ? 'px-14 py-4 rounded-full text-xs font-black active-view-btn transition-all' : 'px-14 py-4 rounded-full text-xs font-black text-white/30 hover:text-white transition-all';
-            document.getElementById('btnA').className = v==='anual' ? 'px-14 py-4 rounded-full text-xs font-black active-view-btn transition-all' : 'px-14 py-4 rounded-full text-xs font-black text-white/30 hover:text-white transition-all';
-            if (v === 'anual') { 
-                if(!map) { map = L.map('map').setView([-15.7942, -47.8822], 10); L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map); }
-                setTimeout(()=>map.invalidateSize(), 300); 
-            }
+            document.getElementById('btnM').className = v==='mensal' ? 'px-8 py-3 rounded-full text-[10px] font-black active-pill transition-all' : 'px-8 py-3 rounded-full text-[10px] font-black text-white/40 transition-all';
+            document.getElementById('btnA').className = v==='anual' ? 'px-8 py-3 rounded-full text-[10px] font-black active-pill transition-all' : 'px-8 py-3 rounded-full text-[10px] font-black text-white/40 transition-all';
+            if (v === 'anual' && !map) { map = L.map('map').setView([-15.7942, -47.8822], 10); L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map); }
             render();
         }
-
-        function getM(arr) { const s = arr.slice().sort((a,b)=>a-b); const mid = Math.floor(s.length/2); return s.length % 2 !== 0 ? s[mid] : (s[mid-1]+s[mid])/2; }
 
         function render() {
             const m = parseInt(document.getElementById('mSel').value);
             const g = document.getElementById('gSel').value;
             const filtered = biData.filter(d => (g==='ALL' || d.g === g));
+
             const getV = (year) => { const r = Array(31).fill(0); const c = Array(31).fill(0); filtered.filter(d => d.y===year && d.m===m).forEach(x => { r[x.d-1]+=x.t; c[x.d-1]=1; }); return {v: r, c: c}; };
             const d26 = getV(2026); const d25 = getV(2025);
             const t26 = d26.v.reduce((a,b)=>a+b, 0); const t25F = d25.v.reduce((a,b)=>a+b, 0);
@@ -232,56 +140,27 @@
 
             document.getElementById('v26').innerText = t26.toLocaleString();
             document.getElementById('v25Full').innerText = t25F.toLocaleString();
-            document.getElementById('projCard').style.display = (m >= 4) ? 'block' : 'none';
 
-            const mVal = getM([...d25.v].filter(x => x > 0)) || 0;
-            const minL = mVal * 0.8;
+            const medianVal = (arr) => { const s = arr.slice().sort((a,b)=>a-b); const mid = Math.floor(s.length/2); return s.length % 2 !== 0 ? s[mid] : (s[mid-1]+s[mid])/2; };
+            const mVal = medianVal([...d25.v].filter(x => x > 0)) || 0;
             document.getElementById('vMed').innerText = Math.round(mVal).toLocaleString();
-            document.getElementById('vPeak').innerText = Math.max(...d26.v).toLocaleString();
-            document.getElementById('vWeek').innerText = Math.round(t26 / (maxD26/7 || 1)).toLocaleString();
-            const totalR = biData.filter(d => d.y === 2026 && d.m === m).reduce((a,c)=>a+c.t, 0);
-            document.getElementById('vShare').innerText = totalR > 0 ? ((t26/totalR)*100).toFixed(1) + '%' : '---';
 
-            if(m >= 4 && maxD26 > 0) document.getElementById('vProj').innerText = Math.round((t26/maxD26)*30).toLocaleString();
             const t25Comp = d25.v.slice(0, maxD26 || 31).reduce((a,b)=>a+b, 0);
-            if(t25Comp > 0 && t26 > 0) { const diff = (((t26/t25Comp)-1)*100).toFixed(1); document.getElementById('vVar').innerText = (diff>0?'+':'') + diff + '% vs 2025'; }
+            if(t25Comp > 0 && t26 > 0) { const diff = (((t26/t25Comp)-1)*100).toFixed(1); document.getElementById('vVar').innerText = (diff>0?'+':'') + diff + '% vs 2025 (P)'; }
+            document.getElementById('vProj').innerText = maxD26 > 0 ? Math.round((t26/maxD26)*22).toLocaleString() : "---";
 
-            // Chart M
             if(charts.l) charts.l.destroy();
-            charts.l = new Chart(document.getElementById('mainC'), { type: 'line', data: { labels: Array.from({length:31},(_,i)=>i+1), datasets: [{ label: 'Meta', data: Array(31).fill(mVal), borderColor: '#f97316', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false }, { label: '2026', data: d26.v.map((v,i)=>d26.c[i]?v:null), borderColor: '#4f46e5', borderWidth: 6, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.05)', tension: 0.4 }, { label: '2025', data: d25.v.map((v,i)=>d25.c[i]?v:null), borderColor: '#cbd5e1', borderWidth: 2, fill: false, tension: 0.2 }] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { tooltip: { backgroundColor: '#0f172a', padding: 20, cornerRadius: 20, callbacks: { label: (ctx) => { const v = ctx.raw; if (!v) return ''; let l = ' ' + ctx.dataset.label + ': ' + v.toLocaleString(); if (ctx.dataset.label === '2026' && mVal > 0) { const dP = (((v/mVal)-1)*100).toFixed(1); l += ` | ${dP>0?'+':''}${dP}% vs Meta`; } return l; } } } } }});
+            charts.l = new Chart(document.getElementById('mainC'), { type: 'line', data: { labels: Array.from({length:31},(_,i)=>i+1), datasets: [{ label: 'Meta', data: Array(31).fill(mVal), borderColor: '#f97316', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false }, { label: '2026', data: d26.v.map((v,i)=>d26.c[i]?v:null), borderColor: '#4f46e5', borderWidth: 5, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.05)', tension: 0.4 }, { label: '2025', data: d25.v.map((v,i)=>d25.c[i]?v:null), borderColor: '#cbd5e1', borderWidth: 2, fill: false }] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false } }});
 
-            // Donut M
             if(charts.d) charts.d.destroy();
-            const gsM = {}; (t26>0?d26.v:d25.v).forEach((v,i) => { if(v>0) { const dayD = biData.filter(x=>x.y===(t26>0?2026:2025) && x.m===m && x.d===(i+1)); dayD.forEach(entry => gsM[entry.g] = (gsM[entry.g]||0)+entry.t); } });
-            charts.d = new Chart(document.getElementById('donutC'), { type: 'doughnut', data: { labels: Object.keys(gsM), datasets: [{ data: Object.values(gsM), backgroundColor: Object.keys(gsM).map(l=>G_COLORS[l]), borderWidth:0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '82%', plugins: { legend: { display: false } } }});
-            document.getElementById('donutTotal').innerText = Object.values(gsM).reduce((a,b)=>a+b,0).toLocaleString();
-            document.getElementById('donutLegend').innerHTML = Object.entries(gsM).map(([l, v]) => `<div class="flex flex-col p-3 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm"><span class="text-[8px] font-black uppercase text-slate-400" style="color:${G_COLORS[l]}">${l}</span><span class="text-xs font-black text-slate-800">${Math.round(v/Object.values(gsM).reduce((a,b)=>a+b,0)*100)}%</span></div>`).join('');
+            const gsF = {}; biData.filter(d => (d.y===(t26>0?2026:2025)) && d.m===m).forEach(x => gsF[x.g] = (gsF[x.g]||0)+x.t);
+            charts.d = new Chart(document.getElementById('donutC'), { type: 'doughnut', data: { labels: Object.keys(gsF), datasets: [{ data: Object.values(gsF), backgroundColor: Object.keys(gsF).map(l=>G_COLORS[l]), borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '80%' }});
 
-            // Grids
             const yearKey = t26 > 0 ? 2026 : 2025;
-            const pS = {}; const uS = {}; const gpSearch = g === 'ALL' ? Object.keys(G_COLORS) : [g];
-            gpSearch.forEach(gn => { const n = biDetails[yearKey] && biDetails[yearKey][m] && biDetails[yearKey][m][gn]; if(n) { Object.entries(n.profiles).forEach(([k,v]) => pS[k] = (pS[k]||0)+v); Object.entries(n.units).forEach(([k,v]) => uS[k] = (uS[k]||0)+v); } });
-            const rG = (data, id, color) => { const s = Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,5); document.getElementById(id).innerHTML = s.map(([k,v]) => `<div class="flex justify-between items-center p-4 bg-white rounded-[1.5rem] border border-slate-50 shadow-sm transition-all hover:shadow-md"><p class="text-[9px] font-black text-slate-500 uppercase truncate w-64">${k}</p><p class="text-sm font-black ${color}">${v.toLocaleString()}</p></div>`).join(''); };
+            const pS = {}; const uS = {}; const gps = g === 'ALL' ? Object.keys(G_COLORS) : [g];
+            gps.forEach(gn => { const n = biDetails[yearKey] && biDetails[yearKey][m] && biDetails[yearKey][m][gn]; if(n) { Object.entries(n.profiles).forEach(([k,v]) => pS[k] = (pS[k]||0)+v); Object.entries(n.units).forEach(([k,v]) => uS[k] = (uS[k]||0)+v); } });
+            const rG = (data, id, color) => { const s = Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,5); document.getElementById(id).innerHTML = s.map(([k,v]) => `<div class="flex justify-between items-center p-3 border-b border-slate-50"><p class="text-[9px] font-bold text-slate-500 uppercase truncate w-64 italic">${k}</p><p class="text-xs font-black ${color}">${v.toLocaleString()}</p></div>`).join(''); };
             rG(pS, 'pGrid', 'text-indigo-600'); rG(uS, 'uGrid', 'text-emerald-600');
-
-            // Macro Anual
-            const ytd26 = biData.filter(d => d.y === 2026).reduce((a,c)=>a+c.t, 0);
-            const ytd25C = biData.filter(d => d.y === 2025 && (d.m < 4 || (d.m === 4 && d.d <= 1))).reduce((a,c)=>a+c.t, 0);
-            if(ytd25C > 0) document.getElementById('macroGrowth').innerText = "+" + ((ytd26-ytd25C)/ytd25C*100).toFixed(1) + "%";
-            
-            const getAM = (y) => { const res = Array(12).fill(0); biData.filter(d => d.y === y).forEach(d => res[d.m-1] += d.t); return res.map((v,i) => v>0?v:(y===2026 && i>=4 ? null : 0)); };
-            if(charts.anual) charts.anual.destroy();
-            charts.anual = new Chart(document.getElementById('lineChartAnual'), { type: 'line', data: { labels: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'], datasets: [{label:'2026', data:getAM(2026), borderColor:'#4f46e5', borderWidth:6, tension:0.4, fill:true, backgroundColor:'rgba(79, 70, 229, 0.05)'},{label:'2025', data:getAM(2025), borderColor:'#a855f7', borderWidth:2, tension:0.2}] }, options: { responsive: true, maintainAspectRatio: false }});
-
-            if(charts.pieA) charts.pieA.destroy();
-            const gA = {}; biData.filter(d => d.y === 2026).forEach(d => gA[d.g] = (gA[d.g]||0)+d.t);
-            charts.pieA = new Chart(document.getElementById('pieChartAnual'), { type: 'doughnut', data: { labels: Object.keys(gA), datasets: [{ data: Object.values(gA), backgroundColor: Object.keys(gA).map(l=>G_COLORS[l]), borderWidth:0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '80%' }});
-
-            if(map) {
-                map.eachLayer(l => { if(l instanceof L.CircleMarker) map.removeLayer(l); });
-                const raS = {}; biData.filter(d => d.y === 2026).forEach(d => { d.u && d.u.forEach(u => { for(let ra in RA_COORDS) { if(u.n.includes(ra)) { raS[ra] = (raS[ra]||0)+u.t; break; } } }); });
-                Object.entries(raS).forEach(([ra, t]) => L.circleMarker(RA_COORDS[ra], { radius: Math.sqrt(t)*0.4, fillColor: "#4f46e5", color: "#fff", weight: 2, fillOpacity: 0.7 }).addTo(map).bindPopup('<b>'+ra+'</b><br>2026: '+t.toLocaleString()));
-            }
         }
         window.onload = start;
     </script>
